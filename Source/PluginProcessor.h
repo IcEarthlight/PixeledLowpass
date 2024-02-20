@@ -69,6 +69,7 @@ private:
     juce::dsp::IIR::Filter<float> lFilter, rFilter;
 
     void updateFilter(const FilterParams& filterParams);
+    void applyFilter(juce::AudioBuffer<float>& buffer);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PixeledLowpassAudioProcessor)

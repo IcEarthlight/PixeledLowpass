@@ -96,7 +96,7 @@ void PixeledLowpassAudioProcessor::prepareToPlay (double sampleRate, int samples
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-
+    
     juce::dsp::ProcessSpec spec;
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = 1;
@@ -179,17 +179,7 @@ void PixeledLowpassAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     if (filterParams.peakGain > 1.f)
     {
         updateFilter(filterParams);
-
-        juce::dsp::AudioBlock<float> block(buffer);
-
-        juce::dsp::AudioBlock<float> lBlock = block.getSingleChannelBlock(0);
-        juce::dsp::AudioBlock<float> rBlock = block.getSingleChannelBlock(1);
-
-        juce::dsp::ProcessContextReplacing<float> lContext(lBlock);
-        juce::dsp::ProcessContextReplacing<float> rContext(rBlock);
-
-        lFilter.process(lContext);
-        rFilter.process(rContext);
+        applyFilter(buffer);
     }
 }
 
@@ -276,6 +266,20 @@ void PixeledLowpassAudioProcessor::updateFilter(const FilterParams& filterParams
         );
     *lFilter.coefficients = *peakCoefficients;
     *rFilter.coefficients = *peakCoefficients;
+}
+
+void PixeledLowpassAudioProcessor::applyFilter(juce::AudioBuffer<float>& buffer)
+{
+    juce::dsp::AudioBlock<float> block(buffer);
+
+    juce::dsp::AudioBlock<float> lBlock = block.getSingleChannelBlock(0);
+    juce::dsp::AudioBlock<float> rBlock = block.getSingleChannelBlock(1);
+
+    juce::dsp::ProcessContextReplacing<float> lContext(lBlock);
+    juce::dsp::ProcessContextReplacing<float> rContext(rBlock);
+
+    lFilter.process(lContext);
+    rFilter.process(rContext);
 }
 
 //==============================================================================
