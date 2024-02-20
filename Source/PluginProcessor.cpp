@@ -96,6 +96,14 @@ void PixeledLowpassAudioProcessor::prepareToPlay (double sampleRate, int samples
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+
+    juce::dsp::ProcessSpec spec;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = 1;
+    spec.sampleRate = sampleRate;
+
+    lChain.prepare(spec);
+    rChain.prepare(spec);
 }
 
 void PixeledLowpassAudioProcessor::releaseResources()
@@ -133,8 +141,8 @@ bool PixeledLowpassAudioProcessor::isBusesLayoutSupported (const BusesLayout& la
 void PixeledLowpassAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    int totalNumInputChannels  = getTotalNumInputChannels();
+    int totalNumOutputChannels = getTotalNumOutputChannels();
 
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
@@ -142,7 +150,7 @@ void PixeledLowpassAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     // This is here to avoid people getting screaming feedback
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+    for (int i = totalNumInputChannels; i < totalNumOutputChannels; i++)
         buffer.clear (i, 0, buffer.getNumSamples());
 
     // This is the place where you'd normally do the guts of your plugin's
@@ -151,12 +159,24 @@ void PixeledLowpassAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
 
-        // ..do something to the data...
+    for (int channel = 0; channel < totalNumOutputChannels; channel++)
+    {
+        float* ptr = buffer.getWritePointer(channel);
+        for (int sample = 0; sample < buffer.getNumSamples(); sample++)
+            ptr[sample] = (float)(std::rand() % 0x10000) / 0x10000 - 0.5f;
     }
+    
+    juce::dsp::AudioBlock<float> block(buffer);
+
+    juce::dsp::AudioBlock<float> lBlock = block.getSingleChannelBlock(0);
+    juce::dsp::AudioBlock<float> rBlock = block.getSingleChannelBlock(1);
+
+    juce::dsp::ProcessContextReplacing<float> lContext(lBlock);
+    juce::dsp::ProcessContextReplacing<float> rContext(rBlock);
+
+    lChain.process(lContext);
+    rChain.process(rContext);
 }
 
 //==============================================================================

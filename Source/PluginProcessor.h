@@ -57,6 +57,11 @@ public:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() const;
 
 private:
+    using Filter = juce::dsp::IIR::Filter<float>;
+    using MonoChain = juce::dsp::ProcessorChain<Filter>;
+
+    MonoChain lChain, rChain;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PixeledLowpassAudioProcessor)
 };
