@@ -19,7 +19,8 @@ PixeledLowpassAudioProcessor::PixeledLowpassAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ),
+       apvts(*this, nullptr, "Parameters", createParameterLayout())
 #endif
 {
 }
@@ -166,7 +167,8 @@ bool PixeledLowpassAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* PixeledLowpassAudioProcessor::createEditor()
 {
-    return new PixeledLowpassAudioProcessorEditor (*this);
+    //return new PixeledLowpassAudioProcessorEditor (*this);
+    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
@@ -181,6 +183,32 @@ void PixeledLowpassAudioProcessor::setStateInformation (const void* data, int si
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout PixeledLowpassAudioProcessor::createParameterLayout() const
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        "Cut Freq",
+        "Cut Freq",
+        juce::NormalisableRange<float>(10.f, 30000.f, 1.f, 0.3f),
+        30000.f
+    ));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        "Quality",
+        "Quality",
+        juce::NormalisableRange<float>(0.1f, 10.f, 0.001f, 0.3f),
+        1.f
+    ));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        "Peak Gain",
+        "Peak Gain",
+        juce::NormalisableRange<float>(0.f, 24.f, 0.1f, 1.f),
+        0.f
+    ));
+
+    return layout;
 }
 
 //==============================================================================
