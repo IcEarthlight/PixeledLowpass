@@ -10,6 +10,15 @@
 
 #include <JuceHeader.h>
 
+struct FilterParams
+{
+    float cutFreq;
+    float peakGain;
+    float quality;
+};
+
+FilterParams getFilterParams(juce::AudioProcessorValueTreeState& apvts, double srate);
+
 //==============================================================================
 /**
 */
@@ -57,10 +66,9 @@ public:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() const;
 
 private:
-    using Filter = juce::dsp::IIR::Filter<float>;
-    using MonoChain = juce::dsp::ProcessorChain<Filter>;
+    juce::dsp::IIR::Filter<float> lFilter, rFilter;
 
-    MonoChain lChain, rChain;
+    void updateFilter(const FilterParams& filterParams);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PixeledLowpassAudioProcessor)

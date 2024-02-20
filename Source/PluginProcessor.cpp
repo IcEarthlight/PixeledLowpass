@@ -102,8 +102,14 @@ void PixeledLowpassAudioProcessor::prepareToPlay (double sampleRate, int samples
     spec.numChannels = 1;
     spec.sampleRate = sampleRate;
 
-    lChain.prepare(spec);
-    rChain.prepare(spec);
+    lFilter.prepare(spec);
+    rFilter.prepare(spec);
+
+    FilterParams filterParams = getFilterParams(apvts, sampleRate);
+    if (filterParams.peakGain > 1.f)
+    {
+        updateFilter(filterParams);
+    }
 }
 
 void PixeledLowpassAudioProcessor::releaseResources()
@@ -164,19 +170,27 @@ void PixeledLowpassAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     {
         float* ptr = buffer.getWritePointer(channel);
         for (int sample = 0; sample < buffer.getNumSamples(); sample++)
-            ptr[sample] = (float)(std::rand() % 0x10000) / 0x10000 - 0.5f;
+        {
+            ptr[sample] = (float)(std::rand() & 0x7fff) / 0x8000 - 0.5f;
+        }
     }
-    
-    juce::dsp::AudioBlock<float> block(buffer);
 
-    juce::dsp::AudioBlock<float> lBlock = block.getSingleChannelBlock(0);
-    juce::dsp::AudioBlock<float> rBlock = block.getSingleChannelBlock(1);
+    FilterParams filterParams = getFilterParams(apvts, getSampleRate());
+    if (filterParams.peakGain > 1.f)
+    {
+        updateFilter(filterParams);
 
-    juce::dsp::ProcessContextReplacing<float> lContext(lBlock);
-    juce::dsp::ProcessContextReplacing<float> rContext(rBlock);
+        juce::dsp::AudioBlock<float> block(buffer);
 
-    lChain.process(lContext);
-    rChain.process(rContext);
+        juce::dsp::AudioBlock<float> lBlock = block.getSingleChannelBlock(0);
+        juce::dsp::AudioBlock<float> rBlock = block.getSingleChannelBlock(1);
+
+        juce::dsp::ProcessContextReplacing<float> lContext(lBlock);
+        juce::dsp::ProcessContextReplacing<float> rContext(rBlock);
+
+        lFilter.process(lContext);
+        rFilter.process(rContext);
+    }
 }
 
 //==============================================================================
@@ -205,6 +219,32 @@ void PixeledLowpassAudioProcessor::setStateInformation (const void* data, int si
     // whose contents will have been created by the getStateInformation() call.
 }
 
+FilterParams getFilterParams(juce::AudioProcessorValueTreeState& apvts, double srate)
+{
+    FilterParams fp;
+    fp.cutFreq = apvts.getRawParameterValue("Cut Freq")->load();
+    fp.peakGain = apvts.getRawParameterValue("Resonance")->load();
+    fp.quality = 0.714f + fp.peakGain / 8.f;
+
+    if (fp.cutFreq > 12000.f)
+        fp.cutFreq = 3.888e12f * srate / (3.888e12f + (srate - 1.2e4f) * pow(3e4 - fp.cutFreq, 2));
+
+    if (fp.cutFreq > srate / 6.)
+    {
+        if (fp.cutFreq < srate / 2.)
+        {
+            float k = (srate / 2. - fp.cutFreq) * 3.f / srate;
+            fp.peakGain *= k * k;
+        }
+        else
+            fp.peakGain = 0.f;
+    }
+
+    fp.peakGain = juce::Decibels::decibelsToGain(fp.peakGain);
+
+    return fp;
+}
+
 juce::AudioProcessorValueTreeState::ParameterLayout PixeledLowpassAudioProcessor::createParameterLayout() const
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
@@ -212,23 +252,30 @@ juce::AudioProcessorValueTreeState::ParameterLayout PixeledLowpassAudioProcessor
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Cut Freq",
         "Cut Freq",
-        juce::NormalisableRange<float>(10.f, 30000.f, 1.f, 0.3f),
+        juce::NormalisableRange<float>(10.f, 30000.f, 0.1f, 0.3f),
         30000.f
     ));
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        "Quality",
-        "Quality",
-        juce::NormalisableRange<float>(0.1f, 10.f, 0.001f, 0.3f),
-        1.f
-    ));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(
-        "Peak Gain",
-        "Peak Gain",
-        juce::NormalisableRange<float>(0.f, 24.f, 0.1f, 1.f),
+        "Resonance",
+        "Resonance",
+        juce::NormalisableRange<float>(0.f, 8.f, 0.01f, 0.7f),
         0.f
     ));
 
     return layout;
+}
+
+void PixeledLowpassAudioProcessor::updateFilter(const FilterParams& filterParams)
+{
+    juce::ReferenceCountedObjectPtr<juce::dsp::IIR::Coefficients<float>>
+        peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
+            getSampleRate(),
+            filterParams.cutFreq,
+            filterParams.quality,
+            filterParams.peakGain
+        );
+    *lFilter.coefficients = *peakCoefficients;
+    *rFilter.coefficients = *peakCoefficients;
 }
 
 //==============================================================================
