@@ -20,17 +20,22 @@ struct SampleData
     SampleData() : l(0.f), r(0.f) { }
     SampleData(float l, float r) : l(l), r(r) { }
 
-    //inline SampleData operator+ (SampleData& sd) const
-    //{
-    //    return { l + sd.l, r + sd.r };
-    //}
+    inline SampleData operator+ (SampleData& sd) const
+    {
+        return { l + sd.l, r + sd.r };
+    }
 
-    //inline SampleData operator+= (SampleData& sd)
-    //{
-    //    l += sd.l;
-    //    r += sd.r;
-    //    return *this;
-    //}
+    inline SampleData operator+= (SampleData& sd)
+    {
+        l += sd.l;
+        r += sd.r;
+        return *this;
+    }
+
+    inline SampleData operator- () const
+    {
+        return { -l, -r };
+    }
 
     //inline SampleData operator- (SampleData& sd) const
     //{
@@ -44,10 +49,10 @@ struct SampleData
     //    return *this;
     //}
 
-    //inline SampleData operator* (float x) const
-    //{
-    //    return { l * x, r * x };
-    //}
+    inline SampleData operator* (float x) const
+    {
+        return { l * x, r * x };
+    }
 
     //inline SampleData operator*= (float x)
     //{
@@ -103,5 +108,12 @@ private:
     std::vector<SampleData> buf;
     int nextPos;
 
+    float lastAmt;
+    SampleData lastSum;
+
     inline void processFrame(float& lspl, float& rspl, float amt);
+    SampleData intervalSum(int val0, int val1);
+    SampleData intervalSum(int val0, float val1);
+    SampleData intervalSum(float val0, int val1);
+    SampleData intervalSum(float val0, float val1);
 };
