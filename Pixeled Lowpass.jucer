@@ -11,6 +11,9 @@
       <FILE id="G96Cfz" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="ZtydGg" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="t3bF4O" name="PixeledFilter.cpp" compile="1" resource="0"
+            file="Source/PixeledFilter.cpp"/>
+      <FILE id="RGi2Cz" name="PixeledFilter.h" compile="0" resource="0" file="Source/PixeledFilter.h"/>
     </GROUP>
   </MAINGROUP>
   <MODULES>

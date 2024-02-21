@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "PixeledFilter.h"
 
 struct FilterParams
 {
@@ -66,10 +67,15 @@ public:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() const;
 
 private:
-    juce::dsp::IIR::Filter<float> lFilter, rFilter;
+    juce::dsp::IIR::Filter<float> lRsnFilter, rRsnFilter;
+    PixeledFilter pxlFilter;
 
-    void updateFilter(const FilterParams& filterParams);
-    void applyFilter(juce::AudioBuffer<float>& buffer);
+    void initRsnFilter(double sampleRate, int samplesPerBlock);
+    void initPxlFilter(double sampleRate, float cutFreq);
+    void updateRsnFilter(const FilterParams& filterParams);
+    void updatePxlFilter(float cutFreq);
+    void applyRsnFilter(juce::AudioBuffer<float>& buffer);
+    void applyPxlFilter(juce::AudioBuffer<float>& buffer);
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PixeledLowpassAudioProcessor)

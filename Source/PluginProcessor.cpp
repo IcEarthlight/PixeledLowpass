@@ -20,7 +20,8 @@ PixeledLowpassAudioProcessor::PixeledLowpassAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
-       apvts(*this, nullptr, "Parameters", createParameterLayout())
+       apvts(*this, nullptr, "Parameters", createParameterLayout()),
+       pxlFilter()
 #endif
 {
 }
@@ -96,19 +97,14 @@ void PixeledLowpassAudioProcessor::prepareToPlay (double sampleRate, int samples
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    
-    juce::dsp::ProcessSpec spec;
-    spec.maximumBlockSize = samplesPerBlock;
-    spec.numChannels = 1;
-    spec.sampleRate = sampleRate;
 
-    lFilter.prepare(spec);
-    rFilter.prepare(spec);
+    initRsnFilter(sampleRate, samplesPerBlock);
+    initPxlFilter(sampleRate, apvts.getRawParameterValue("Cut Freq")->load());
 
     FilterParams filterParams = getFilterParams(apvts, sampleRate);
     if (filterParams.peakGain > 1.f)
     {
-        updateFilter(filterParams);
+        updateRsnFilter(filterParams);
     }
 }
 
@@ -166,21 +162,24 @@ void PixeledLowpassAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
 
-    for (int channel = 0; channel < totalNumOutputChannels; channel++)
-    {
-        float* ptr = buffer.getWritePointer(channel);
-        for (int sample = 0; sample < buffer.getNumSamples(); sample++)
-        {
-            ptr[sample] = (float)(std::rand() & 0x7fff) / 0x8000 - 0.5f;
-        }
-    }
+    //for (int channel = 0; channel < totalNumOutputChannels; channel++)
+    //{
+    //    float* ptr = buffer.getWritePointer(channel);
+    //    for (int sample = 0; sample < buffer.getNumSamples(); sample++)
+    //    {
+    //        ptr[sample] = (float)(std::rand() & 0x7fff) / 0x8000 - 0.5f;
+    //    }
+    //}
 
     FilterParams filterParams = getFilterParams(apvts, getSampleRate());
     if (filterParams.peakGain > 1.f)
     {
-        updateFilter(filterParams);
-        applyFilter(buffer);
+        updateRsnFilter(filterParams);
+        applyRsnFilter(buffer);
     }
+
+    updatePxlFilter(apvts.getRawParameterValue("Cut Freq")->load());
+    applyPxlFilter(buffer);
 }
 
 //==============================================================================
@@ -242,7 +241,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PixeledLowpassAudioProcessor
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Cut Freq",
         "Cut Freq",
-        juce::NormalisableRange<float>(10.f, 30000.f, 0.1f, 0.3f),
+        juce::NormalisableRange<float>(20.f, 30000.f, 0.1f, 0.3f),
         30000.f
     ));
     layout.add(std::make_unique<juce::AudioParameterFloat>(
@@ -255,7 +254,23 @@ juce::AudioProcessorValueTreeState::ParameterLayout PixeledLowpassAudioProcessor
     return layout;
 }
 
-void PixeledLowpassAudioProcessor::updateFilter(const FilterParams& filterParams)
+void PixeledLowpassAudioProcessor::initRsnFilter(double sampleRate, int samplesPerBlock)
+{
+    juce::dsp::ProcessSpec spec;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = 1;
+    spec.sampleRate = sampleRate;
+
+    lRsnFilter.prepare(spec);
+    rRsnFilter.prepare(spec);
+}
+
+void PixeledLowpassAudioProcessor::initPxlFilter(double sampleRate, float cutFreq)
+{
+    pxlFilter.prepare(cutFreq, sampleRate);
+}
+
+void PixeledLowpassAudioProcessor::updateRsnFilter(const FilterParams& filterParams)
 {
     juce::ReferenceCountedObjectPtr<juce::dsp::IIR::Coefficients<float>>
         peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
@@ -264,11 +279,16 @@ void PixeledLowpassAudioProcessor::updateFilter(const FilterParams& filterParams
             filterParams.quality,
             filterParams.peakGain
         );
-    *lFilter.coefficients = *peakCoefficients;
-    *rFilter.coefficients = *peakCoefficients;
+    *lRsnFilter.coefficients = *peakCoefficients;
+    *rRsnFilter.coefficients = *peakCoefficients;
 }
 
-void PixeledLowpassAudioProcessor::applyFilter(juce::AudioBuffer<float>& buffer)
+void PixeledLowpassAudioProcessor::updatePxlFilter(float cutFreq)
+{
+    pxlFilter.setFreq(cutFreq, getSampleRate());
+}
+
+void PixeledLowpassAudioProcessor::applyRsnFilter(juce::AudioBuffer<float>& buffer)
 {
     juce::dsp::AudioBlock<float> block(buffer);
 
@@ -278,8 +298,13 @@ void PixeledLowpassAudioProcessor::applyFilter(juce::AudioBuffer<float>& buffer)
     juce::dsp::ProcessContextReplacing<float> lContext(lBlock);
     juce::dsp::ProcessContextReplacing<float> rContext(rBlock);
 
-    lFilter.process(lContext);
-    rFilter.process(rContext);
+    lRsnFilter.process(lContext);
+    rRsnFilter.process(rContext);
+}
+
+void PixeledLowpassAudioProcessor::applyPxlFilter(juce::AudioBuffer<float>& buffer)
+{
+    pxlFilter.process(buffer);
 }
 
 //==============================================================================
