@@ -21,6 +21,8 @@ inline void PixeledFilter::setFreq(float freq, double srate)
 void PixeledFilter::prepare(float freq, double srate)
 {
     setFreq(freq, srate);
+    prevAmt = convAmt;
+
     buf = std::vector<SampleData>((int)(srate / 20.), SampleData());
 
     nextPos = 0;
@@ -28,13 +30,20 @@ void PixeledFilter::prepare(float freq, double srate)
 
 void PixeledFilter::process(juce::AudioBuffer<float>& buffer)
 {
+    int samplesPerBlock = buffer.getNumSamples();
     float* lptr = buffer.getWritePointer(0);
     float* rptr = buffer.getWritePointer(1);
 
-    for (int sample = 0; sample < buffer.getNumSamples(); sample++)
+    for (int sample = 0; sample < samplesPerBlock; sample++)
     {
-        processFrame(lptr[sample], rptr[sample], convAmt);
+        processFrame(
+            lptr[sample],
+            rptr[sample],
+            prevAmt + (convAmt - prevAmt) * sample / samplesPerBlock
+        );
     }
+
+    prevAmt = convAmt;
 }
 
 void PixeledFilter::processFrame(float& lspl, float& rspl, float amt)

@@ -97,8 +97,8 @@ public:
 
 private:
     float cutFreq;
-    float prevFreq;
     float convAmt;
+    float prevAmt;
 
     std::vector<SampleData> buf;
     int nextPos;
