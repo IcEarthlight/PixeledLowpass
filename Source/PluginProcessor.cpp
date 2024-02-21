@@ -211,12 +211,14 @@ void PixeledLowpassAudioProcessor::setStateInformation (const void* data, int si
 FilterParams getFilterParams(juce::AudioProcessorValueTreeState& apvts, double srate)
 {
     FilterParams fp;
-    fp.cutFreq = apvts.getRawParameterValue("Cut Freq")->load();
+    fp.cutFreq = 0.4f * apvts.getRawParameterValue("Cut Freq")->load();
     fp.peakGain = apvts.getRawParameterValue("Resonance")->load();
     fp.quality = 0.714f + fp.peakGain / 8.f;
 
-    if (fp.cutFreq > 12000.f)
-        fp.cutFreq = 3.888e12f * srate / (3.888e12f + (srate - 1.2e4f) * pow(3e4 - fp.cutFreq, 2));
+    //if (fp.cutFreq > 12000.f)
+    //    fp.cutFreq = 3.888e12f * srate / (3.888e12f + (srate - 1.2e4f) * pow(3e4 - fp.cutFreq, 2));
+    if (fp.cutFreq > 8000.f)
+        fp.cutFreq = 1.28e11f * srate / (1.28e11f + (srate - 8e3f) * pow(1.2e4 - fp.cutFreq, 2));
 
     if (fp.cutFreq > srate / 6.)
     {
@@ -247,8 +249,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout PixeledLowpassAudioProcessor
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Resonance",
         "Resonance",
-        juce::NormalisableRange<float>(0.f, 8.f, 0.01f, 0.7f),
+        juce::NormalisableRange<float>(0.f, 12.f, 0.01f, 0.4f),
         0.f
+    ));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        "Delta",
+        "Delta",
+        false
     ));
 
     return layout;
@@ -285,6 +292,7 @@ void PixeledLowpassAudioProcessor::updateRsnFilter(const FilterParams& filterPar
 
 void PixeledLowpassAudioProcessor::updatePxlFilter(float cutFreq)
 {
+    pxlFilter.delta = apvts.getParameterAsValue("Delta").getValue();
     pxlFilter.setFreq(cutFreq, getSampleRate());
 }
 
