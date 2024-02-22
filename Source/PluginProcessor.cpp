@@ -191,8 +191,8 @@ bool PixeledLowpassAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* PixeledLowpassAudioProcessor::createEditor()
 {
-    //return new PixeledLowpassAudioProcessorEditor (*this);
-    return new juce::GenericAudioProcessorEditor(*this);
+    return new PixeledLowpassAudioProcessorEditor (*this);
+    //return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
@@ -217,7 +217,9 @@ void PixeledLowpassAudioProcessor::setStateInformation (const void* data, int si
         apvts.replaceState(tree);
 
         FilterParams filterParams = getFilterParams(apvts, getSampleRate());
-        updateRsnFilter(filterParams);
+        if (filterParams.peakGain > 1.f)
+            updateRsnFilter(filterParams);
+
         updatePxlFilter(apvts.getRawParameterValue("Cut Freq")->load());
     }
 }

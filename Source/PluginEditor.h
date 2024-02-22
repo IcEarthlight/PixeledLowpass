@@ -11,6 +11,14 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+struct MySlider : juce::Slider
+{
+    MySlider() : juce::Slider(juce::Slider::SliderStyle::LinearHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxAbove)
+    {
+
+    }
+};
+
 //==============================================================================
 /**
 */
@@ -28,6 +36,9 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     PixeledLowpassAudioProcessor& audioProcessor;
+
+    const int defaultWid = 476, defaultHei = 160;
+    MySlider cutFreqSlider, resonanceSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PixeledLowpassAudioProcessorEditor)
 };
