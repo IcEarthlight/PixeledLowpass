@@ -39,6 +39,7 @@ private:
 
     const int defaultWid = 476, defaultHei = 160;
     MySlider cutFreqSlider, resonanceSlider;
+    juce::AudioProcessorValueTreeState::SliderAttachment cutFreqAtch, resonanceAtch;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PixeledLowpassAudioProcessorEditor)
 };

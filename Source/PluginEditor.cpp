@@ -10,8 +10,10 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor (PixeledLowpassAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLowpassAudioProcessor& p)
+    : AudioProcessorEditor(&p), audioProcessor(p),
+      cutFreqAtch(audioProcessor.apvts, "Cut Freq", cutFreqSlider),
+      resonanceAtch(audioProcessor.apvts, "Resonance", resonanceSlider)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
