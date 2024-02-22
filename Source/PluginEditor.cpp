@@ -12,6 +12,8 @@
 //==============================================================================
 PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLowpassAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p),
+      cutFreqSlider(*audioProcessor.apvts.getParameter("Cut Freq"), "Hz"),
+      resonanceSlider(*audioProcessor.apvts.getParameter("Resonance"), "dB"),
       cutFreqAtch(audioProcessor.apvts, "Cut Freq", cutFreqSlider),
       resonanceAtch(audioProcessor.apvts, "Resonance", resonanceSlider)
 {
