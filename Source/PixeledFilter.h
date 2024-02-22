@@ -20,12 +20,12 @@ struct SampleData
     SampleData() : l(0.f), r(0.f) { }
     SampleData(float l, float r) : l(l), r(r) { }
 
-    inline SampleData operator+ (SampleData& sd) const
+    inline SampleData operator+ (SampleData sd) const
     {
         return { l + sd.l, r + sd.r };
     }
 
-    inline SampleData operator+= (SampleData& sd)
+    inline SampleData operator+= (SampleData sd)
     {
         l += sd.l;
         r += sd.r;
@@ -37,17 +37,17 @@ struct SampleData
         return { -l, -r };
     }
 
-    //inline SampleData operator- (SampleData& sd) const
-    //{
-    //    return { l - sd.l, r - sd.r };
-    //}
+    inline SampleData operator- (SampleData sd) const
+    {
+        return { l - sd.l, r - sd.r };
+    }
 
-    //inline SampleData operator-= (SampleData& sd)
-    //{
-    //    l -= sd.l;
-    //    r -= sd.r;
-    //    return *this;
-    //}
+    inline SampleData operator-= (SampleData sd)
+    {
+        l -= sd.l;
+        r -= sd.r;
+        return *this;
+    }
 
     inline SampleData operator* (float x) const
     {
@@ -91,6 +91,47 @@ struct SampleData
     //}
 };
 
+//struct SampleSum
+//{
+//    long l;
+//    long r;
+//
+//    SampleSum() : l(0), r(0) { }
+//    SampleSum(long l, long r) : l(l), r(r) { }
+//    SampleSum(SampleData sd) : l(sd.l * 8388608l), r(sd.r * 8388608l) { }
+//
+//    inline SampleSum operator+ (SampleSum& sd) const
+//    {
+//        return { l + sd.l, r + sd.r };
+//    }
+//
+//    inline SampleSum operator+= (SampleSum& ss)
+//    {
+//        l += ss.l;
+//        r += ss.r;
+//        return *this;
+//    }
+//
+//    inline SampleSum operator+= (SampleData& sd)
+//    {
+//        l += sd.l * 8388608l;
+//        r += sd.r * 8388608l;
+//        return *this;
+//    }
+//
+//    inline SampleSum operator- () const
+//    {
+//        return { -l, -r };
+//    }
+//
+//    inline SampleSum operator-= (SampleSum& ss)
+//    {
+//        l -= ss.l;
+//        r -= ss.r;
+//        return *this;
+//    }
+//};
+
 class PixeledFilter
 {
 public:
@@ -105,13 +146,16 @@ private:
     float convAmt;
     float prevAmt;
 
+    juce::String logMsg { };
+    juce::FileLogger logger { juce::File("C:\\Users\\earth\\Documents\\Code\\JUCE_works\\Pixeled Lowpass\\log.txt"), "Welcome" };
+
     std::vector<SampleData> buf;
     int nextPos;
 
     float lastAmt;
     SampleData lastSum;
 
-    inline void processFrame(float& lspl, float& rspl, float amt);
+    inline void processFrame(float& lspl, float& rspl, const float amt);
     SampleData intervalSum(int val0, int val1);
     SampleData intervalSum(int val0, float val1);
     SampleData intervalSum(float val0, int val1);

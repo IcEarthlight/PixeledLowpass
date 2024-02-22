@@ -162,14 +162,15 @@ void PixeledLowpassAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
 
-    //for (int channel = 0; channel < totalNumOutputChannels; channel++)
-    //{
-    //    float* ptr = buffer.getWritePointer(channel);
-    //    for (int sample = 0; sample < buffer.getNumSamples(); sample++)
-    //    {
-    //        ptr[sample] = (float)(std::rand() & 0x7fff) / 0x8000 - 0.5f;
-    //    }
-    //}
+    if (apvts.getParameterAsValue("Noise").getValue())
+        for (int channel = 0; channel < totalNumOutputChannels; channel++)
+        {
+            float* ptr = buffer.getWritePointer(channel);
+            for (int sample = 0; sample < buffer.getNumSamples(); sample++)
+            {
+                ptr[sample] = (float)(std::rand() & 0x7fff) / 0x8000 - 0.5f;
+            }
+        }
 
     FilterParams filterParams = getFilterParams(apvts, getSampleRate());
     if (filterParams.peakGain > 1.f)
@@ -200,12 +201,25 @@ void PixeledLowpassAudioProcessor::getStateInformation (juce::MemoryBlock& destD
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+
+    juce::MemoryOutputStream mos(destData, true);
+    apvts.state.writeToStream(mos);
 }
 
 void PixeledLowpassAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+
+    juce::ValueTree tree = juce::ValueTree::readFromData(data, sizeInBytes);
+    if (tree.isValid())
+    {
+        apvts.replaceState(tree);
+
+        FilterParams filterParams = getFilterParams(apvts, getSampleRate());
+        updateRsnFilter(filterParams);
+        updatePxlFilter(apvts.getRawParameterValue("Cut Freq")->load());
+    }
 }
 
 FilterParams getFilterParams(juce::AudioProcessorValueTreeState& apvts, double srate)
@@ -224,7 +238,7 @@ FilterParams getFilterParams(juce::AudioProcessorValueTreeState& apvts, double s
     {
         if (fp.cutFreq < srate / 2.)
         {
-            float k = (srate / 2. - fp.cutFreq) * 3.f / srate;
+            float k = (srate / 2.f - fp.cutFreq) * 3.f / srate;
             fp.peakGain *= k * k;
         }
         else
@@ -255,6 +269,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout PixeledLowpassAudioProcessor
     layout.add(std::make_unique<juce::AudioParameterBool>(
         "Delta",
         "Delta",
+        false
+    ));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        "Noise",
+        "Noise",
         false
     ));
 
