@@ -13,10 +13,11 @@
 
 struct LookAndFeel : juce::LookAndFeel_V4
 {
-    void drawLinearSlider(juce::Graphics&,
+    void drawLinearSlider(juce::Graphics& g,
                           int x, int y, int width, int height,
                           float sliderPos, float minSliderPos, float maxSliderPos,
-                          juce::Slider::SliderStyle, juce::Slider&) override { }
+                          juce::Slider::SliderStyle sliderStyle,
+                          juce::Slider& slider) override;
 };
 
 struct MySlider : juce::Slider
@@ -36,7 +37,7 @@ struct MySlider : juce::Slider
     }
 
     const int textHei = 14;
-    void paint(juce::Graphics& g) override { }
+    void paint(juce::Graphics& g) override;
     juce::Rectangle<int> getSliderBounds() const;
     juce::String getDisplayString() const;
 
@@ -67,6 +68,8 @@ private:
     const int defaultWid = 476, defaultHei = 160;
     MySlider cutFreqSlider, resonanceSlider;
     juce::AudioProcessorValueTreeState::SliderAttachment cutFreqAtch, resonanceAtch;
+
+    std::unique_ptr<juce::Drawable> titleImg;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PixeledLowpassAudioProcessorEditor)
 };

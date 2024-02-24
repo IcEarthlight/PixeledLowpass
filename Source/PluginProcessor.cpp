@@ -259,13 +259,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout PixeledLowpassAudioProcessor
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Cut Freq",
         "Cut Freq",
-        juce::NormalisableRange<float>(20.f, 30000.f, 0.1f, 0.3f),
+        juce::NormalisableRange<float>(20.f, 30000.f, 0.001f, 0.3f),
         30000.f
     ));
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Resonance",
         "Resonance",
-        juce::NormalisableRange<float>(0.f, 12.f, 0.01f, 0.4f),
+        juce::NormalisableRange<float>(0.f, 12.f, 0.0001f, 0.4f),
         0.f
     ));
     layout.add(std::make_unique<juce::AudioParameterBool>(
