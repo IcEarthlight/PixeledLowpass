@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-struct LookAndFeel : juce::LookAndFeel_V4
+struct CutFreqLookAndFeel : juce::LookAndFeel_V4
 {
     void drawLinearSlider(juce::Graphics& g,
                           int x, int y, int width, int height,
@@ -20,20 +20,38 @@ struct LookAndFeel : juce::LookAndFeel_V4
                           juce::Slider& slider) override;
 };
 
-struct MySlider : juce::Slider
+struct ResonanceLookAndFeel : juce::LookAndFeel_V4
 {
-    MySlider(juce::RangedAudioParameter& rap, const juce::String& suffix)
-        : juce::Slider(juce::Slider::SliderStyle::LinearHorizontal,
-          juce::Slider::TextEntryBoxPosition::TextBoxAbove),
+    void drawLinearSlider(juce::Graphics& g,
+        int x, int y, int width, int height,
+        float sliderPos, float minSliderPos, float maxSliderPos,
+        juce::Slider::SliderStyle sliderStyle,
+        juce::Slider& slider) override;
+
+    int shakeCount = 0;
+    juce::Point<float> shakeOffset { 0.f, 0.f };
+};
+
+struct CustomSlider : juce::Slider
+{
+public:
+    CustomSlider(juce::RangedAudioParameter& rap, const juce::String& suffix)
+        : juce::Slider(
+              juce::Slider::SliderStyle::LinearHorizontal,
+              juce::Slider::TextEntryBoxPosition::TextBoxAbove
+          ),
           param(&rap),
           suffix(suffix)
-    {
-        setLookAndFeel(&lnf);
-    }
+    { }
 
-    ~MySlider()
+    ~CustomSlider()
     {
         setLookAndFeel(nullptr);
+    }
+
+    inline float getValue() const noexcept
+    {
+        return param->getValue();
     }
 
     const int textHei = 14;
@@ -42,9 +60,46 @@ struct MySlider : juce::Slider
     juce::String getDisplayString() const;
 
 private:
-    LookAndFeel lnf;
     juce::RangedAudioParameter* param;
     juce::String suffix;
+};
+
+struct CutFreqSlider : CustomSlider
+{
+public:
+    //using CustomSlider::CustomSlider;
+    CutFreqSlider(juce::RangedAudioParameter& rap, const juce::String& suffix)
+        : CustomSlider(rap, suffix)
+    {
+        setLookAndFeel(&lnf);
+    }
+
+    ~CutFreqSlider()
+    {
+        setLookAndFeel(nullptr);
+    }
+
+private:
+    CutFreqLookAndFeel lnf;
+};
+
+struct ResonanceSlider : CustomSlider
+{
+public:
+    //using CustomSlider::CustomSlider;
+    ResonanceSlider(juce::RangedAudioParameter& rap, const juce::String& suffix)
+        : CustomSlider(rap, suffix)
+    {
+        setLookAndFeel(&lnf);
+    }
+
+    ~ResonanceSlider()
+    {
+        setLookAndFeel(nullptr);
+    }
+
+private:
+    ResonanceLookAndFeel lnf;
 };
 
 //==============================================================================
@@ -66,7 +121,11 @@ private:
     PixeledLowpassAudioProcessor& audioProcessor;
 
     const int defaultWid = 476, defaultHei = 160;
-    MySlider cutFreqSlider, resonanceSlider;
+    juce::Colour titleColor = juce::Colour::fromRGBA(255u, 255u, 255u, 191u);
+    juce::Colour backColor = juce::Colour::fromRGB(44u, 44u, 44u);
+
+    CutFreqSlider cutFreqSlider;
+    ResonanceSlider resonanceSlider;
     juce::AudioProcessorValueTreeState::SliderAttachment cutFreqAtch, resonanceAtch;
 
     std::unique_ptr<juce::Drawable> titleImg;

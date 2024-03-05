@@ -9,7 +9,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-void LookAndFeel::drawLinearSlider(
+void CutFreqLookAndFeel::drawLinearSlider(
     juce::Graphics& g,
     int x, int y, int width, int height,
     float sliderPos, float minSliderPos, float maxSliderPos,
@@ -21,14 +21,56 @@ void LookAndFeel::drawLinearSlider(
     juce::Rectangle<float> bound(x, y + height / 1.5f, width, height / 9.f);
     juce::Rectangle<float> hilightBound = bound.removeFromLeft(sliderPos * width);
 
-    g.setColour(juce::Colour(0.5f, 0.25f, 0.1f, 1.f));
+    float darkness = 1.f - pow(sliderPos, 8.f);
+    g.setColour(juce::Colour(0.5f, 0.1f, 0.15f * darkness, 1.f));
     g.fillRect(bound);
 
-    g.setColour(juce::Colour(0.5f, 0.17f, 1.f, 1.f));
+    float hue = 0.8333f * (6 * pow(sliderPos, 5.f) - 15 * pow(sliderPos, 4.f) + 10 * pow(sliderPos, 3.f));
+    float saturation = 10.f * pow( - pow(sliderPos, 2.f) + sliderPos, 3.f) + 0.17f;
+    float brightness = 0.4f * (1.f - 1.f * pow(4.f * pow(sliderPos, 3.f) - 4.f * pow(sliderPos, 1.5f) + 1.f, 3.f)) + 0.43f;
+    g.setColour(juce::Colour(hue, saturation, brightness, 1.f));
     g.fillRect(hilightBound);
 }
 
-void MySlider::paint(juce::Graphics& g)
+void ResonanceLookAndFeel::drawLinearSlider(
+    juce::Graphics& g,
+    int x, int y, int width, int height,
+    float sliderPos, float minSliderPos, float maxSliderPos,
+    juce::Slider::SliderStyle sliderStyle, juce::Slider& slider)
+{
+    x += 12;
+    width -= 24;
+
+    shakeCount++;
+    if (shakeCount >= 2)
+    {
+        shakeCount = 0;
+        shakeOffset.setXY(
+            float(std::rand() & 0x7fff) / 0x7fff - 0.5f,
+            float(std::rand() & 0x7fff) / 0x7fff - 0.5f
+        );
+    }
+
+    juce::Rectangle<float> bound(x, y + height / 1.5f, width, height / 9.f);
+    if (sliderPos > 0.4f)
+    {
+        float shakeAmp = pow(sliderPos, 4.f) - 0.0256f;
+        bound += shakeAmp * (height / 9.f) * shakeOffset;
+    }
+    juce::Rectangle<float> hilightBound = bound.removeFromLeft(sliderPos * width);
+
+    float darkness = 1.f - pow(sliderPos, 8.f);
+    g.setColour(juce::Colour(0.5f, 0.1f, 0.15f * darkness, 1.f));
+    g.fillRect(bound);
+
+    float hue = 0.61667f - sliderPos * 0.575f;
+    float saturation = 0.17f + 0.83f * pow(sliderPos, 3.f);
+    float brightness = 0.4f + sliderPos * 0.6f;
+    g.setColour(juce::Colour(hue, saturation, brightness, 1.f));
+    g.fillRect(hilightBound);
+}
+
+void CustomSlider::paint(juce::Graphics& g)
 {
     juce::Range<double> range = getRange();
     juce::Rectangle<int> sliderBounds = getSliderBounds();
@@ -44,7 +86,7 @@ void MySlider::paint(juce::Graphics& g)
     );
 }
 
-juce::Rectangle<int> MySlider::getSliderBounds() const
+juce::Rectangle<int> CustomSlider::getSliderBounds() const
 {
     return getLocalBounds();
 }
@@ -61,9 +103,9 @@ PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLo
     // editor's size to whatever you need it to be.
 
     titleImg = juce::Drawable::createFromSVGFile(
-        juce::File("C:\\Users\\earth\\Documents\\Code\\JUCE_works\\Pixeled Lowpass\\Source\\title.svg")
+        juce::File("C:\\Users\\earth\\Works\\Code\\JUCE_works\\Pixeled Lowpass\\Source\\title.svg")
     );
-    titleImg->replaceColour(juce::Colours::black, juce::Colours::whitesmoke);
+    titleImg->replaceColour(juce::Colours::black, titleColor);
 
     addChildComponent(cutFreqSlider);
     addChildComponent(resonanceSlider);
@@ -86,12 +128,13 @@ PixeledLowpassAudioProcessorEditor::~PixeledLowpassAudioProcessorEditor()
 void PixeledLowpassAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll(juce::Colour::fromRGB(33u, 33u, 33u));
+    g.fillAll(backColor);
 
     //g.setColour (juce::Colours::White);
     //g.setFont (15.0f);
     //g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
-
+    if (resonanceSlider.getValue() > 0.4f)
+        resonanceSlider.repaint();
 }
 
 void PixeledLowpassAudioProcessorEditor::resized()

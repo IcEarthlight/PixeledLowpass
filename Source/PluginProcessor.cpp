@@ -168,7 +168,7 @@ void PixeledLowpassAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
             float* ptr = buffer.getWritePointer(channel);
             for (int sample = 0; sample < buffer.getNumSamples(); sample++)
             {
-                ptr[sample] = (float)(std::rand() & 0x7fff) / 0x8000 - 0.5f;
+                ptr[sample] = float(std::rand() & 0x7fff) / 0x7fff - 0.5f;
             }
         }
 
@@ -234,13 +234,13 @@ FilterParams getFilterParams(juce::AudioProcessorValueTreeState& apvts, double s
     //if (fp.cutFreq > 12000.f)
     //    fp.cutFreq = 3.888e12f * srate / (3.888e12f + (srate - 1.2e4f) * pow(3e4 - fp.cutFreq, 2));
     if (fp.cutFreq > 8000.f)
-        fp.cutFreq = 1.28e11f * srate / (1.28e11f + (srate - 8e3f) * pow(1.2e4 - fp.cutFreq, 2));
+        fp.cutFreq = 1.28e11 * srate / (1.28e11 + (srate - 8e3) * pow(1.2e4 - fp.cutFreq, 2));
 
     if (fp.cutFreq > srate / 6.)
     {
         if (fp.cutFreq < srate / 2.)
         {
-            float k = (srate / 2.f - fp.cutFreq) * 3.f / srate;
+            float k = (srate / 2. - fp.cutFreq) * 3. / srate;
             fp.peakGain *= k * k;
         }
         else
