@@ -9,33 +9,12 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-void CustomSlider::paint(juce::Graphics& g)
-{
-    juce::Range<double> range = getRange();
-    juce::Rectangle<int> sliderBounds = getSliderBounds();
-
-    getLookAndFeel().drawLinearSlider(
-        g,
-        sliderBounds.getX(), sliderBounds.getY(),
-        sliderBounds.getWidth(), sliderBounds.getHeight(),
-        param->getValue(),
-        0.f, 1.f,
-        juce::Slider::SliderStyle::LinearHorizontal,
-        *this
-    );
-}
-
-juce::Rectangle<int> CustomSlider::getSliderBounds() const
-{
-    return getLocalBounds();
-}
-
 //==============================================================================
 PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLowpassAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p),
-      cutFreqSlider(*p.apvts.getParameter("Cut Freq"), "Hz"),
-      resonanceSlider(*p.apvts.getParameter("Resonance"), "dB", cutFreqSlider),
-      deltaBox(*p.apvts.getParameter("Delta"), "Delta"),
+      cutFreqSlider(p.apvts, "Cut Freq", "Hz"),
+      resonanceSlider(p.apvts, "Resonance", "dB"),
+      deltaBox(p.apvts, "Delta", "Delta"),
       cutFreqAtch(p.apvts, "Cut Freq", cutFreqSlider),
       resonanceAtch(p.apvts, "Resonance", resonanceSlider),
       deltaAtch(p.apvts, "Delta", deltaBox)

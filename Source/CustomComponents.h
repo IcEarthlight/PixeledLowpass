@@ -23,7 +23,7 @@ class ResonanceSlider;
 struct CutFreqLookAndFeel : juce::LookAndFeel_V4
 {
 public:
-    CutFreqLookAndFeel()
+    CutFreqLookAndFeel(const juce::AudioProcessorValueTreeState& apvts)
         : juce::LookAndFeel_V4()
     { }
 
@@ -42,8 +42,8 @@ private:
 struct ResonanceLookAndFeel : juce::LookAndFeel_V4
 {
 public:
-    ResonanceLookAndFeel(CutFreqSlider& cutFreqSlider)
-        : juce::LookAndFeel_V4(), cutFreqSlider(cutFreqSlider)
+    ResonanceLookAndFeel(const juce::AudioProcessorValueTreeState& apvts)
+        : juce::LookAndFeel_V4(), cutFreqParam(*apvts.getParameter("Cut Freq"))
     { }
 
     void drawLinearSlider(juce::Graphics& g,
@@ -55,9 +55,10 @@ public:
     bool needRepaint = true;
 
 private:
+    juce::RangedAudioParameter& cutFreqParam;
+
     int shakeCount = 0;
     juce::Point<float> shakeOffset{ 0.f, 0.f };
-    CutFreqSlider& cutFreqSlider;
 
     juce::Colour lastColor{ 44u, 44u, 44u };
 };
@@ -65,12 +66,13 @@ private:
 struct CustomSlider : juce::Slider
 {
 public:
-    CustomSlider(juce::RangedAudioParameter& rap, const juce::String& suffix)
+    CustomSlider(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID, const juce::String& suffix)
         : juce::Slider(
             juce::Slider::SliderStyle::LinearHorizontal,
             juce::Slider::TextEntryBoxPosition::TextBoxAbove
         ),
-        param(&rap),
+        apvts(apvts),
+        rap(*apvts.getParameter(parameterID)),
         suffix(suffix)
     { }
 
@@ -79,27 +81,21 @@ public:
         setLookAndFeel(nullptr);
     }
 
-    inline float getValue() const noexcept
-    {
-        return param->getValue();
-    }
-
     const int textHei = 14;
     void paint(juce::Graphics& g) override;
-    juce::Rectangle<int> getSliderBounds() const;
-    juce::String getDisplayString() const;
+    //juce::String getDisplayString() const;
 
 private:
-    juce::RangedAudioParameter* param;
+    juce::AudioProcessorValueTreeState& apvts;
+    juce::RangedAudioParameter& rap;
     juce::String suffix;
 };
 
 struct CutFreqSlider : CustomSlider
 {
 public:
-    //using CustomSlider::CustomSlider;
-    CutFreqSlider(juce::RangedAudioParameter& rap, const juce::String& suffix)
-        : CustomSlider(rap, suffix)
+    CutFreqSlider(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID, const juce::String& suffix)
+        : CustomSlider(apvts, parameterID, suffix), lnf(apvts)
     {
         setLookAndFeel(&lnf);
     }
@@ -121,9 +117,8 @@ private:
 struct ResonanceSlider : CustomSlider
 {
 public:
-    //using CustomSlider::CustomSlider;
-    ResonanceSlider(juce::RangedAudioParameter& rap, const juce::String& suffix, CutFreqSlider& cutFreqSlider)
-        : CustomSlider(rap, suffix), cutFreqSlider(cutFreqSlider), lnf(cutFreqSlider)
+    ResonanceSlider(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID, const juce::String& suffix)
+        : CustomSlider(apvts, parameterID, suffix), lnf(apvts)
     {
         setLookAndFeel(&lnf);
     }
@@ -140,7 +135,6 @@ public:
 
 private:
     ResonanceLookAndFeel lnf;
-    CutFreqSlider& cutFreqSlider;
 };
 
 
@@ -157,9 +151,10 @@ public:
 struct CustomToggleButton : juce::ToggleButton
 {
 public:
-    CustomToggleButton(juce::RangedAudioParameter& rap, const juce::String& buttonText)
+    CustomToggleButton(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID, const juce::String& buttonText)
         : juce::ToggleButton(buttonText),
-          params(rap)
+          apvts(apvts),
+          rap(*apvts.getParameter(parameterID))
     {
         setLookAndFeel(&lnf);
     }
@@ -170,6 +165,7 @@ public:
     }
 
 private:
-    juce::RangedAudioParameter& params;
+    juce::AudioProcessorValueTreeState& apvts;
+    juce::RangedAudioParameter& rap;
     DeltaBoxLookAndFeel lnf;
 };
