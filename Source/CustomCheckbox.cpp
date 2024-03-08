@@ -8,6 +8,7 @@
   ==============================================================================
 */
 
+#include "PluginEditor.h"
 #include "CustomCheckbox.h"
 #include "ColorTable.h"
 //#include "ColorUtilities.h"
@@ -26,11 +27,11 @@ void DeltaBoxLookAndFeel::drawTickBox(juce::Graphics& g,
 
     if (ticked)
     {
-        g.fillRoundedRectangle(x + w / 5, y + h / 5, w * 3 / 5, h * 3 / 5, w / 4);
-        g.drawRoundedRectangle(x + w / 12, y + h / 12, w * 5 / 6, h * 5 / 6, w / 3, w / 8);
+        g.fillRoundedRectangle(x + w/5, y + h/5, w * 3/5, h * 3/5, w/4);
+        g.drawRoundedRectangle(x + w/12, y + h/12, w * 5/6, h * 5/6, w/3, w/8);
     }
     else
-        g.drawRoundedRectangle(x, y, w, h, w / 3, w / 8);
+        g.drawRoundedRectangle(x, y, w, h, w/3, w/8);
 }
 
 void DeltaBoxLookAndFeel::drawToggleButton(juce::Graphics& g,
@@ -42,11 +43,16 @@ void DeltaBoxLookAndFeel::drawToggleButton(juce::Graphics& g,
 
     drawTickBox(
         g, button,
-        (float)button.getWidth() * 2 / 9, ((float)button.getHeight() - tickWidth) * 0.5f,
+        (float)button.getWidth() * 2/9, ((float)button.getHeight() - tickWidth) / 2,
         tickWidth, tickWidth,
         button.getToggleState(),
         button.isEnabled(),
         shouldDrawButtonAsHighlighted,
         shouldDrawButtonAsDown
     );
+}
+
+void CustomToggleButton::clicked()
+{
+    editor.repaint();
 }

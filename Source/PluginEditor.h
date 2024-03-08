@@ -17,7 +17,7 @@
 //==============================================================================
 /**
 */
-class PixeledLowpassAudioProcessorEditor  : public juce::AudioProcessorEditor
+class PixeledLowpassAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
     PixeledLowpassAudioProcessorEditor (PixeledLowpassAudioProcessor&);
@@ -41,7 +41,6 @@ private:
     juce::AudioProcessorValueTreeState::SliderAttachment cutFreqAtch, resonanceAtch;
     juce::AudioProcessorValueTreeState::ButtonAttachment deltaAtch;
 
-    //std::unique_ptr<juce::Drawable> titleImg;
     SVGRenderer renderer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PixeledLowpassAudioProcessorEditor)

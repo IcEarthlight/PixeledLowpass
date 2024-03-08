@@ -15,7 +15,7 @@ PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLo
     : AudioProcessorEditor(&p), audioProcessor(p),
       cutFreqSlider(p.apvts, "Cut Freq", "Hz"),
       resonanceSlider(p.apvts, "Resonance", "dB"),
-      deltaBox(p.apvts, "Delta"),
+      deltaBox(*this, p.apvts, "Delta"),
       cutFreqAtch(p.apvts, "Cut Freq", cutFreqSlider),
       resonanceAtch(p.apvts, "Resonance", resonanceSlider),
       deltaAtch(p.apvts, "Delta", deltaBox)

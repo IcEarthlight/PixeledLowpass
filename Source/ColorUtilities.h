@@ -41,9 +41,9 @@ inline juce::Colour colorLerp(juce::Colour& c0, juce::Colour& c1, const float k)
     //    return c1;
 
     return juce::Colour(
-        juce::uint8(c0.getRed() + k * (c1.getRed() - c0.getRed())),
+        juce::uint8(c0.getRed()   + k * (c1.getRed()   - c0.getRed())),
         juce::uint8(c0.getGreen() + k * (c1.getGreen() - c0.getGreen())),
-        juce::uint8(c0.getBlue() + k * (c1.getBlue() - c0.getBlue())),
+        juce::uint8(c0.getBlue()  + k * (c1.getBlue()  - c0.getBlue())),
         juce::uint8(c0.getAlpha() + k * (c1.getAlpha() - c0.getAlpha()))
     );
 }
@@ -51,10 +51,10 @@ inline juce::Colour colorLerp(juce::Colour& c0, juce::Colour& c1, const float k)
 inline juce::Colour colorApproach(juce::Colour& c0, juce::Colour& c1)
 {
     return juce::Colour(
-        c0.getRed() == c1.getRed() ? c0.getRed() : juce::uint8(c0.getRed() < c1.getRed() ? c0.getRed() + 1 : c0.getRed() - 1),
-        c0.getGreen() == c1.getGreen() ? c0.getGreen() : juce::uint8(c0.getGreen() < c1.getGreen() ? c0.getGreen() + 1 : c0.getGreen() - 1),
-        c0.getBlue() == c1.getBlue() ? c0.getBlue() : juce::uint8(c0.getBlue() < c1.getBlue() ? c0.getBlue() + 1 : c0.getBlue() - 1),
-        c0.getAlpha() == c1.getAlpha() ? c0.getAlpha() : juce::uint8(c0.getAlpha() < c1.getAlpha() ? c0.getAlpha() + 1 : c0.getAlpha() - 1)
+        c0.getRed()   == c1.getRed()   ? c0.getRed()   : juce::uint8(c0.getRed()   < c1.getRed()   ? c0.getRed()+1   : c0.getRed()-1),
+        c0.getGreen() == c1.getGreen() ? c0.getGreen() : juce::uint8(c0.getGreen() < c1.getGreen() ? c0.getGreen()+1 : c0.getGreen()-1),
+        c0.getBlue()  == c1.getBlue()  ? c0.getBlue()  : juce::uint8(c0.getBlue()  < c1.getBlue()  ? c0.getBlue()+1  : c0.getBlue()-1),
+        c0.getAlpha() == c1.getAlpha() ? c0.getAlpha() : juce::uint8(c0.getAlpha() < c1.getAlpha() ? c0.getAlpha()+1 : c0.getAlpha()-1)
     );
 }
 

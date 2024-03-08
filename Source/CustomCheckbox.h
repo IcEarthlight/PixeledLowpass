@@ -12,6 +12,8 @@
 
 #include <JuceHeader.h>
 
+class PixeledLowpassAudioProcessorEditor;
+
 struct DeltaBoxLookAndFeel : juce::LookAndFeel_V4
 {
 public:
@@ -33,12 +35,14 @@ struct CustomToggleButton : juce::ToggleButton
 {
 public:
     CustomToggleButton(
+        PixeledLowpassAudioProcessorEditor& editor,
         juce::AudioProcessorValueTreeState& apvts,
         juce::StringRef parameterID
     )
-        : juce::ToggleButton(),
-        apvts(apvts),
-        rap(*apvts.getParameter(parameterID))
+        : editor(editor),
+          juce::ToggleButton(),
+          apvts(apvts),
+          rap(*apvts.getParameter(parameterID))
     {
         setLookAndFeel(&lnf);
     }
@@ -53,7 +57,10 @@ public:
         return rap.getValue() > 0.5f;
     }
 
+    void clicked() override;
+
 private:
+    PixeledLowpassAudioProcessorEditor& editor;
     juce::AudioProcessorValueTreeState& apvts;
     juce::RangedAudioParameter& rap;
 
