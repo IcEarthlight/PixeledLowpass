@@ -11,14 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-inline float differenceBetween(juce::Colour& c0, juce::Colour& c1);
-inline juce::Colour colorLerp(juce::Colour& c0, juce::Colour& c1, const float k);
-inline juce::Colour colorApproach(juce::Colour& c0, juce::Colour& c1);
 
-
-//==============================================================================
-class CutFreqSlider;
-class ResonanceSlider;
 
 struct CutFreqLookAndFeel : juce::LookAndFeel_V4
 {
@@ -58,9 +51,9 @@ private:
     juce::RangedAudioParameter& cutFreqParam;
 
     int shakeCount = 0;
-    juce::Point<float> shakeOffset{ 0.f, 0.f };
+    juce::Point<float> shakeOffset { 0.f, 0.f };
 
-    juce::Colour lastColor{ 44u, 44u, 44u };
+    juce::Colour lastColor { 44u, 44u, 44u };
 };
 
 struct CustomSlider : juce::Slider
@@ -135,37 +128,4 @@ public:
 
 private:
     ResonanceLookAndFeel lnf;
-};
-
-
-//==============================================================================
-struct DeltaBoxLookAndFeel : juce::LookAndFeel_V4
-{
-public:
-    void drawToggleButton(juce::Graphics& g,
-        juce::ToggleButton& button,
-        bool shouldDrawButtonAsHighlighted,
-        bool shouldDrawButtonAsDown) override;
-};
-
-struct CustomToggleButton : juce::ToggleButton
-{
-public:
-    CustomToggleButton(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID, const juce::String& buttonText)
-        : juce::ToggleButton(buttonText),
-          apvts(apvts),
-          rap(*apvts.getParameter(parameterID))
-    {
-        setLookAndFeel(&lnf);
-    }
-
-    ~CustomToggleButton()
-    {
-        setLookAndFeel(nullptr);
-    }
-
-private:
-    juce::AudioProcessorValueTreeState& apvts;
-    juce::RangedAudioParameter& rap;
-    DeltaBoxLookAndFeel lnf;
 };

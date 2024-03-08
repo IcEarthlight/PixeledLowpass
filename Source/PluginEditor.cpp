@@ -8,13 +8,14 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "ColorTable.h"
 
 //==============================================================================
 PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLowpassAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p),
       cutFreqSlider(p.apvts, "Cut Freq", "Hz"),
       resonanceSlider(p.apvts, "Resonance", "dB"),
-      deltaBox(p.apvts, "Delta", "Delta"),
+      deltaBox(p.apvts, "Delta"),
       cutFreqAtch(p.apvts, "Cut Freq", cutFreqSlider),
       resonanceAtch(p.apvts, "Resonance", resonanceSlider),
       deltaAtch(p.apvts, "Delta", deltaBox)
@@ -22,18 +23,38 @@ PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLo
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 
-    titleImg = juce::Drawable::createFromSVGFile(
-        juce::File("C:\\Users\\earth\\Works\\Code\\JUCE_works\\Pixeled Lowpass\\Source\\title.svg")
+    //titleImg = juce::Drawable::createFromSVGFile(
+    //    juce::File()
+    //);
+    //titleImg->replaceColour(juce::Colours::black, ColorTable::title);
+    renderer.addAsset(
+        *this,
+        "C:\\Users\\earth\\Works\\Code\\JUCE_works\\Pixeled Lowpass\\Assets\\title.svg",
+        juce::Rectangle<float>(
+            23.f  / 476, 16.f / 160,
+            323.f / 476, 21.f / 160
+        ),
+        ColorTable::title,
+        0.08f
     );
-    titleImg->replaceColour(juce::Colours::black, titleColor);
+    renderer.addAsset(
+        *this,
+        "C:\\Users\\earth\\Works\\Code\\JUCE_works\\Pixeled Lowpass\\Assets\\delta.svg",
+        juce::Rectangle<float>(
+            29.f / 36, 641.f / 800,
+            1431.f / 16660, 53.f / 800
+        ),
+        ColorTable::text,
+        0.08f
+    );
 
     addChildComponent(cutFreqSlider);
     addChildComponent(resonanceSlider);
-    addChildComponent(*titleImg);
+    //addChildComponent(*titleImg);
     addChildComponent(deltaBox);
     cutFreqSlider.setVisible(true);
     resonanceSlider.setVisible(true);
-    titleImg->setVisible(true);
+    //titleImg->setVisible(true);
     deltaBox.setVisible(true);
 
     setSize(defaultWid, defaultHei);
@@ -50,11 +71,8 @@ PixeledLowpassAudioProcessorEditor::~PixeledLowpassAudioProcessorEditor()
 void PixeledLowpassAudioProcessorEditor::paint(juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll(backColor);
 
-    //g.setColour (juce::Colours::White);
-    //g.setFont (15.0f);
-    //g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    g.fillAll(deltaBox.getState() ? ColorTable::back : ColorTable::back_);
 
     if (cutFreqSlider.needRepaint())
         cutFreqSlider.repaint();
@@ -62,8 +80,7 @@ void PixeledLowpassAudioProcessorEditor::paint(juce::Graphics& g)
     if (resonanceSlider.needRepaint() || cutFreqSlider.needRepaint())
         resonanceSlider.repaint();
 
-    g.setColour(juce::Colours::grey);
-    g.fillRect(getLocalBounds().getWidth() * 3 / 4, getLocalBounds().getHeight() * 2 / 3, getLocalBounds().getWidth() / 4, getLocalBounds().getHeight() / 3);
+    renderer.updateAll();
 
 }
 
@@ -76,30 +93,43 @@ void PixeledLowpassAudioProcessorEditor::resized()
     int localWid = bounds.getWidth();
     int localHei = bounds.getHeight();
     
-    juce::Rectangle<int> titleArea = bounds.removeFromTop(bounds.getHeight() / 3);
-    juce::Rectangle<int> bottomArea = bounds.removeFromBottom(bounds.getHeight() / 2);
+    //juce::Rectangle<int> titleArea = bounds.removeFromTop(bounds.getHeight() / 3);
+    //juce::Rectangle<int> bottomArea = bounds.removeFromBottom(bounds.getHeight() / 2);
 
-    juce::Rectangle<int> lSliderArea = bounds.removeFromLeft(bounds.getWidth() / 2);
-    juce::Rectangle<int> rSliderArea = bounds;
+    //juce::Rectangle<int> lSliderArea = bounds.removeFromLeft(bounds.getWidth() / 2);
+    //juce::Rectangle<int> rSliderArea = bounds;
 
     float interval = 0.08f;
-    lSliderArea.removeFromLeft(interval * localWid);
-    lSliderArea.removeFromRight(interval * localWid / 2.f);
-    rSliderArea.removeFromLeft(interval * localWid / 2.f);
-    rSliderArea.removeFromRight(interval * localWid);
+    //lSliderArea.removeFromLeft(interval * localWid);
+    //lSliderArea.removeFromRight(interval * localWid / 2.f);
+    //rSliderArea.removeFromLeft(interval * localWid / 2.f);
+    //rSliderArea.removeFromRight(interval * localWid);
+
+    juce::Rectangle<int> lSliderArea(
+        interval * localWid, localHei / 3,
+        (1 - 3 * interval)/2 * localWid, localHei / 3
+    );
+    juce::Rectangle<int> rSliderArea(
+        (0.5f + interval/2) * localWid, localHei / 3,
+        (1 - 3 * interval) / 2 * localWid, localHei / 3
+    );
 
     cutFreqSlider.setBounds(lSliderArea);
     resonanceSlider.setBounds(rSliderArea);
 
-    juce::Rectangle<float> titleAera(
-        localWid * 23.f / 476.f, localHei / 10.f,
-        localWid * 323.f / 476.f, localHei * 21.f / 160.f
-    );
-    titleImg->setTransformToFit(
-        titleAera,
-        juce::RectanglePlacement::stretchToFit
-    );
+    //juce::Rectangle<float> titleAera(
+    //    localWid *  23 / 476, localHei / 10,
+    //    localWid * 323 / 476, localHei * 21 / 160
+    //);
+    //titleImg->setTransformToFit(
+    //    titleAera,
+    //    juce::RectanglePlacement::stretchToFit
+    //);
+    renderer.resized(localWid, localHei);
 
-    bottomArea.removeFromLeft(localWid * 3 / 4);
-    deltaBox.setBounds(bottomArea);
+    juce::Rectangle<int> deltaBoxArea(
+        localWid * 339 / 476, localHei * 119 / 160,
+        localWid * 107 / 476, localHei *  29 / 160
+    );
+    deltaBox.setBounds(deltaBoxArea);
 }

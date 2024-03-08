@@ -4,6 +4,10 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="O6Uv7o" name="Pixeled Lowpass">
     <GROUP id="{E7EA7C00-33D5-7749-3FA4-6756A129FAF2}" name="Source">
+      <FILE id="gm6amc" name="CustomCheckbox.cpp" compile="1" resource="0"
+            file="Source/CustomCheckbox.cpp"/>
+      <FILE id="UWzpqO" name="CustomCheckbox.h" compile="0" resource="0"
+            file="Source/CustomCheckbox.h"/>
       <FILE id="fgAFso" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="XxM4Cd" name="PluginProcessor.h" compile="0" resource="0"
@@ -14,10 +18,16 @@
       <FILE id="t3bF4O" name="PixeledFilter.cpp" compile="1" resource="0"
             file="Source/PixeledFilter.cpp"/>
       <FILE id="RGi2Cz" name="PixeledFilter.h" compile="0" resource="0" file="Source/PixeledFilter.h"/>
-      <FILE id="ClhAGp" name="CustomComponents.cpp" compile="1" resource="0"
-            file="Source/CustomComponents.cpp"/>
-      <FILE id="vTcAW7" name="CustomComponents.h" compile="0" resource="0"
-            file="Source/CustomComponents.h"/>
+      <FILE id="ClhAGp" name="CustomSliders.cpp" compile="1" resource="0"
+            file="Source/CustomSliders.cpp"/>
+      <FILE id="vTcAW7" name="CustomSliders.h" compile="0" resource="0" file="Source/CustomSliders.h"/>
+      <FILE id="Yxrvl6" name="ColorTable.h" compile="0" resource="0" file="Source/ColorTable.h"/>
+      <FILE id="iM9Nlz" name="SVGRenderer.cpp" compile="1" resource="0" file="Source/SVGRenderer.cpp"/>
+      <FILE id="alffCW" name="SVGRenderer.h" compile="0" resource="0" file="Source/SVGRenderer.h"/>
+      <FILE id="WOdILr" name="ColorUtilities.cpp" compile="1" resource="0"
+            file="Source/ColorUtilities.cpp"/>
+      <FILE id="FhVyjy" name="ColorUtilities.h" compile="0" resource="0"
+            file="Source/ColorUtilities.h"/>
     </GROUP>
   </MAINGROUP>
   <MODULES>

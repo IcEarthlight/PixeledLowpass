@@ -8,56 +8,10 @@
   ==============================================================================
 */
 
-#include "CustomComponents.h"
+#include "CustomSliders.h"
+#include "ColorTable.h"
+#include "ColorUtilities.h"
 
-inline float differenceBetween(juce::Colour& c0, juce::Colour& c1)
-{
-    return sqrt(
-        pow(c0.getFloatRed() - c1.getFloatRed(), 2.f)
-        + pow(c0.getFloatGreen() - c1.getFloatGreen(), 2.f)
-        + pow(c0.getFloatBlue() - c1.getFloatBlue(), 2.f)
-    );
-}
-
-inline juce::Colour colorLerp(juce::Colour& c0, juce::Colour& c1, const float k)
-{
-    //if (k <= 0.f)
-    //    return c0;
-
-    //if (k >= 1.f)
-    //    return c1;
-
-    return juce::Colour(
-        unsigned int(c0.getRed()   + k * (c1.getRed()   - c0.getRed())),
-        unsigned int(c0.getGreen() + k * (c1.getGreen() - c0.getGreen())),
-        unsigned int(c0.getBlue()  + k * (c1.getBlue()  - c0.getBlue()))
-    );
-}
-
-inline juce::Colour colorApproach(juce::Colour& c0, juce::Colour& c1)
-{
-    return juce::Colour(
-        c0.getRed()   == c1.getRed()   ? c0.getRed()   : c0.getRed()   < c1.getRed()   ? c0.getRed()+1   : c0.getRed()-1,
-        c0.getGreen() == c1.getGreen() ? c0.getGreen() : c0.getGreen() < c1.getGreen() ? c0.getGreen()+1 : c0.getGreen()-1,
-        c0.getBlue()  == c1.getBlue()  ? c0.getBlue()  : c0.getBlue()  < c1.getBlue()  ? c0.getBlue()+1  : c0.getBlue()-1
-    );
-}
-
-inline void colorGradient(bool& needRepaint, juce::Colour& lastColor, juce::Colour& newColor, const float k)
-{
-    if (lastColor == newColor)
-        needRepaint = false;
-    else
-    {
-        needRepaint = true;
-        juce::Colour mixedColor = colorLerp(lastColor, newColor, 0.08f);
-
-        if (lastColor == mixedColor)
-            newColor = colorApproach(lastColor, newColor);
-        else
-            newColor = mixedColor;
-    }
-}
 
 void CustomSlider::paint(juce::Graphics& g)
 {
@@ -98,10 +52,8 @@ void CutFreqLookAndFeel::drawLinearSlider(
 
     colorGradient(needRepaint, lastColor, newColor, 0.08f);
 
-    g.setColour(newColor);
+    g.setColour(lastColor);
     g.fillRect(hilightBound);
-
-    lastColor = newColor;
 }
 
 void ResonanceLookAndFeel::drawLinearSlider(
@@ -145,35 +97,6 @@ void ResonanceLookAndFeel::drawLinearSlider(
 
     colorGradient(needRepaint, lastColor, newColor, 0.08f);
 
-    g.setColour(newColor);
+    g.setColour(lastColor);
     g.fillRect(hilightBound);
-
-    lastColor = newColor;
-}
-
-void DeltaBoxLookAndFeel::drawToggleButton(juce::Graphics& g,
-    juce::ToggleButton& button,
-    bool shouldDrawButtonAsHighlighted,
-    bool shouldDrawButtonAsDown)
-{
-    float fontSize = (float)button.getHeight() * 0.28125f;
-    float tickWidth = fontSize * 1.1f;
-
-    drawTickBox(g, button, 4.0f, ((float)button.getHeight() - tickWidth) * 0.5f,
-        tickWidth, tickWidth,
-        button.getToggleState(),
-        button.isEnabled(),
-        shouldDrawButtonAsHighlighted,
-        shouldDrawButtonAsDown);
-
-    g.setColour(button.findColour(juce::ToggleButton::textColourId));
-    g.setFont(fontSize);
-
-    if (!button.isEnabled())
-        g.setOpacity(0.5f);
-
-    g.drawFittedText(button.getButtonText(),
-        button.getLocalBounds().withTrimmedLeft(juce::roundToInt(tickWidth) + 10)
-        .withTrimmedRight(2),
-        juce::Justification::centredLeft, 10);
 }

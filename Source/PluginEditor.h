@@ -10,7 +10,9 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "CustomComponents.h"
+#include "CustomSliders.h"
+#include "CustomCheckbox.h"
+#include "SVGRenderer.h"
 
 //==============================================================================
 /**
@@ -35,13 +37,12 @@ private:
     PixeledLowpassAudioProcessor& audioProcessor;
 
     const int defaultWid = 476, defaultHei = 160;
-    const juce::Colour titleColor = juce::Colour::fromRGBA(255u, 255u, 255u, 191u);
-    const juce::Colour backColor = juce::Colour::fromRGB(44u, 44u, 44u);
 
     juce::AudioProcessorValueTreeState::SliderAttachment cutFreqAtch, resonanceAtch;
     juce::AudioProcessorValueTreeState::ButtonAttachment deltaAtch;
 
-    std::unique_ptr<juce::Drawable> titleImg;
+    //std::unique_ptr<juce::Drawable> titleImg;
+    SVGRenderer renderer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PixeledLowpassAudioProcessorEditor)
 };
