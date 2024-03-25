@@ -9,7 +9,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "ColorTable.h"
-
 //==============================================================================
 PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLowpassAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p),
@@ -78,6 +77,9 @@ void PixeledLowpassAudioProcessorEditor::paint(juce::Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
 
     g.fillAll(deltaBox.getState() ? ColorTable::backb : ColorTable::back);
+
+    cutFreqSlider.update();
+    resonanceSlider.update();
 
     if (cutFreqSlider.needRepaint())
         cutFreqSlider.repaint();

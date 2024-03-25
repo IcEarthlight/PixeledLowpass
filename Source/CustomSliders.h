@@ -11,14 +11,41 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "ColorTable.h"
 
 
-struct CutFreqLookAndFeel : juce::LookAndFeel_V4
+struct CustomLookAndFeel : juce::LookAndFeel_V4
+{
+public:
+    CustomLookAndFeel(const juce::AudioProcessorValueTreeState& apvts)
+        : juce::LookAndFeel_V4(),
+          deltaParam(*apvts.getParameter("Delta"))
+    { }
+
+    void drawLabelwithText(juce::Graphics& g, juce::Label& label, juce::String text, int digitLen);
+
+    int mouseDownCounter = 0;
+    bool sliderNeedRepaint = true;
+    bool labelNeedRepaint = true;
+
+    inline bool needRepaint() const noexcept
+    {
+        return sliderNeedRepaint || labelNeedRepaint;
+    }
+
+protected:
+    juce::RangedAudioParameter& deltaParam;
+    juce::Colour lastColor{ ColorTable::back };
+    
+private:
+    juce::Colour labelColor{ ColorTable::text };
+};
+
+struct CutFreqLookAndFeel : CustomLookAndFeel
 {
 public:
     CutFreqLookAndFeel(const juce::AudioProcessorValueTreeState& apvts)
-        : juce::LookAndFeel_V4(),
-          deltaParam(*apvts.getParameter("Delta"))
+        : CustomLookAndFeel(apvts)
     { }
 
     void drawLinearSlider(juce::Graphics& g,
@@ -27,20 +54,18 @@ public:
         juce::Slider::SliderStyle sliderStyle,
         juce::Slider& slider) override;
 
-    bool needRepaint = true;
-
-private:
-    juce::RangedAudioParameter& deltaParam;
-    juce::Colour lastColor{ 44u, 44u, 44u };
+    inline void drawLabel(juce::Graphics& g, juce::Label& label) override
+    {
+        drawLabelwithText(g, label, "Cut Freq", 6);
+    }
 };
 
-struct ResonanceLookAndFeel : juce::LookAndFeel_V4
+struct ResonanceLookAndFeel : CustomLookAndFeel
 {
 public:
     ResonanceLookAndFeel(const juce::AudioProcessorValueTreeState& apvts)
-        : juce::LookAndFeel_V4(),
-          cutFreqParam(*apvts.getParameter("Cut Freq")),
-          deltaParam(*apvts.getParameter("Delta"))
+        : CustomLookAndFeel(apvts),
+          cutFreqParam(*apvts.getParameter("Cut Freq"))
     { }
 
     void drawLinearSlider(juce::Graphics& g,
@@ -49,16 +74,16 @@ public:
         juce::Slider::SliderStyle sliderStyle,
         juce::Slider& slider) override;
 
-    bool needRepaint = true;
+    inline void drawLabel(juce::Graphics& g, juce::Label& label) override
+    {
+        drawLabelwithText(g, label, "Resonance", 4);
+    }
 
 private:
     juce::RangedAudioParameter& cutFreqParam;
-    juce::RangedAudioParameter& deltaParam;
 
     int shakeCount = 0;
     juce::Point<float> shakeOffset { 0.f, 0.f };
-
-    juce::Colour lastColor { 44u, 44u, 44u };
 };
 
 struct CustomSlider : juce::Slider
@@ -79,9 +104,22 @@ public:
         setLookAndFeel(nullptr);
     }
 
+    inline void update() noexcept
+    {
+        if (lnf->mouseDownCounter > 0)
+        {
+            if (lnf->mouseDownCounter == 1)
+                repaint();
+            lnf->mouseDownCounter--;
+        }
+    }
+
     const int textHei = 14;
     void paint(juce::Graphics& g) override;
     //juce::String getDisplayString() const;
+
+protected:
+    std::unique_ptr<CustomLookAndFeel> lnf;
 
 private:
     juce::AudioProcessorValueTreeState& apvts;
@@ -93,44 +131,30 @@ struct CutFreqSlider : CustomSlider
 {
 public:
     CutFreqSlider(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID, const juce::String& suffix)
-        : CustomSlider(apvts, parameterID, suffix), lnf(apvts)
+        : CustomSlider(apvts, parameterID, suffix)
     {
-        setLookAndFeel(&lnf);
-    }
-
-    ~CutFreqSlider()
-    {
-        setLookAndFeel(nullptr);
+        lnf = std::make_unique<CutFreqLookAndFeel>(apvts);
+        setLookAndFeel(lnf.get());
     }
 
     inline bool needRepaint() const noexcept
     {
-        return lnf.needRepaint;
+        return lnf->needRepaint();
     }
-
-private:
-    CutFreqLookAndFeel lnf;
 };
 
 struct ResonanceSlider : CustomSlider
 {
 public:
     ResonanceSlider(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID, const juce::String& suffix)
-        : CustomSlider(apvts, parameterID, suffix), lnf(apvts)
+        : CustomSlider(apvts, parameterID, suffix)
     {
-        setLookAndFeel(&lnf);
-    }
-
-    ~ResonanceSlider()
-    {
-        setLookAndFeel(nullptr);
+        lnf = std::make_unique<ResonanceLookAndFeel>(apvts);
+        setLookAndFeel(lnf.get());
     }
 
     inline bool needRepaint() const noexcept
     {
-        return lnf.needRepaint || getValue() > 0.4f;
+        return lnf->needRepaint() || getValue() > 0.4f;
     }
-
-private:
-    ResonanceLookAndFeel lnf;
 };

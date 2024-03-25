@@ -29,12 +29,43 @@ void CustomSlider::paint(juce::Graphics& g)
     );
 }
 
+void CustomLookAndFeel::drawLabelwithText(juce::Graphics& g, juce::Label& label, juce::String text, int digitLen)
+{
+    juce::Colour newColor;
+    if (deltaParam.getValue() > 0.5f)
+        newColor = ColorTable::textb;
+    else
+        newColor = ColorTable::text;
+
+    if (mouseDownCounter > 0)
+        text = label.getText().substring(0, digitLen);
+
+    colorGradient(labelNeedRepaint, labelColor, newColor, 0.08f);
+
+    if (!label.isBeingEdited())
+    {
+        const juce::Font font(getLabelFont(label));
+
+        g.setColour(labelColor);
+        g.setFont(font);
+        g.setFont(label.getLocalBounds().getHeight());
+
+        //auto textArea = getLabelBorderSize(label).subtractedFrom(label.getLocalBounds());
+
+        g.drawFittedText(text, label.getLocalBounds(), label.getJustificationType(),
+            1, label.getMinimumHorizontalScale());
+    }
+}
+
 void CutFreqLookAndFeel::drawLinearSlider(
     juce::Graphics& g,
     int x, int y, int width, int height,
     float sliderPos, float minSliderPos, float maxSliderPos,
     juce::Slider::SliderStyle sliderStyle, juce::Slider& slider)
 {
+    if (slider.isMouseButtonDown())
+        mouseDownCounter = 1;
+
     x += 12;
     width -= 24;
 
@@ -56,7 +87,7 @@ void CutFreqLookAndFeel::drawLinearSlider(
 
     juce::Colour newColor(hue, saturation, brightness, 1.f);
 
-    colorGradient(needRepaint, lastColor, newColor, 0.08f);
+    colorGradient(sliderNeedRepaint, lastColor, newColor, 0.08f);
 
     g.setColour(lastColor);
     g.fillRect(hilightBound);
@@ -68,6 +99,9 @@ void ResonanceLookAndFeel::drawLinearSlider(
     float sliderPos, float minSliderPos, float maxSliderPos,
     juce::Slider::SliderStyle sliderStyle, juce::Slider& slider)
 {
+    if (slider.isMouseButtonDown())
+        mouseDownCounter = 1;
+
     x += 12;
     width -= 24;
 
@@ -107,7 +141,7 @@ void ResonanceLookAndFeel::drawLinearSlider(
 
     juce::Colour newColor(hue, saturation, brightness, 1.f);
 
-    colorGradient(needRepaint, lastColor, newColor, 0.08f);
+    colorGradient(sliderNeedRepaint, lastColor, newColor, 0.08f);
 
     g.setColour(lastColor);
     g.fillRect(hilightBound);
