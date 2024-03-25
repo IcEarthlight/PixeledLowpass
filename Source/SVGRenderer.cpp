@@ -31,6 +31,13 @@ SVGAsset::SVGAsset(
     img->setVisible(true);
 }
 
+SVGAsset::~SVGAsset()
+{
+    parentComponent.removeChildComponent(img.get());
+    img.reset();
+    img = nullptr;
+}
+
 void SVGAsset::resized(float localWei, float localHei)
 {
     juce::Rectangle<float> newAera(
@@ -43,7 +50,7 @@ void SVGAsset::resized(float localWei, float localHei)
     );
 }
 
-void SVGAsset::setColor(juce::Colour& newColor)
+void SVGAsset::setColor(const juce::Colour& newColor)
 {
     targetColor = newColor;
     needUpdate = true;
@@ -66,6 +73,8 @@ void SVGAsset::updateColor()
         colorGradient(needUpdate, color, targetColor, 0.08f);
         img->replaceColour(lastColor, color);
     }
+
+    img->repaint();
 }
 
 SVGRenderer::~SVGRenderer()
@@ -109,4 +118,5 @@ void SVGRenderer::clear()
         }
     }
     assets.clear();
+    assets.shrink_to_fit();
 }

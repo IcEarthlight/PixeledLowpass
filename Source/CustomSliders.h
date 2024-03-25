@@ -17,7 +17,8 @@ struct CutFreqLookAndFeel : juce::LookAndFeel_V4
 {
 public:
     CutFreqLookAndFeel(const juce::AudioProcessorValueTreeState& apvts)
-        : juce::LookAndFeel_V4()
+        : juce::LookAndFeel_V4(),
+          deltaParam(*apvts.getParameter("Delta"))
     { }
 
     void drawLinearSlider(juce::Graphics& g,
@@ -29,6 +30,7 @@ public:
     bool needRepaint = true;
 
 private:
+    juce::RangedAudioParameter& deltaParam;
     juce::Colour lastColor{ 44u, 44u, 44u };
 };
 
@@ -36,7 +38,9 @@ struct ResonanceLookAndFeel : juce::LookAndFeel_V4
 {
 public:
     ResonanceLookAndFeel(const juce::AudioProcessorValueTreeState& apvts)
-        : juce::LookAndFeel_V4(), cutFreqParam(*apvts.getParameter("Cut Freq"))
+        : juce::LookAndFeel_V4(),
+          cutFreqParam(*apvts.getParameter("Cut Freq")),
+          deltaParam(*apvts.getParameter("Delta"))
     { }
 
     void drawLinearSlider(juce::Graphics& g,
@@ -49,6 +53,7 @@ public:
 
 private:
     juce::RangedAudioParameter& cutFreqParam;
+    juce::RangedAudioParameter& deltaParam;
 
     int shakeCount = 0;
     juce::Point<float> shakeOffset { 0.f, 0.f };

@@ -12,10 +12,16 @@
 
 namespace ColorTable
 {
-    const juce::Colour text  { 0x99'FFFFFFu };
-    const juce::Colour title { 0xCC'FFFFFFu };
-    const juce::Colour back  { 0xFF'2C2C2Cu };
-    const juce::Colour text_ { 0x99'000000u };
-    const juce::Colour title_{ 0xCC'000000u };
-    const juce::Colour back_ { 0xFF'D3D3D3u };
+    const juce::Colour back     { 0xFF'2C2C2Cu };
+    const juce::Colour title    { 0xCC'FFFFFFu };
+    const juce::Colour titlehp  { 0x00'2C2C2Cu };
+    const juce::Colour text     { 0x99'FFFFFFu };
+    const juce::Colour backb    { 0xFF'BBBBBBu };
+    const juce::Colour titleb   { 0x00'BBBBBBu };
+    const juce::Colour titlehpb { 0x99'000000u };
+    const juce::Colour textb    { 0x77'000000u };
+
+    const juce::Colour arr[] {
+        title, titleb, titlehp, titlehpb, text, textb
+    };
 }

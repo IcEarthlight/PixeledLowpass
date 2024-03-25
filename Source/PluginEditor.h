@@ -27,6 +27,8 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
+    void deltaSwitch();
+
     CutFreqSlider cutFreqSlider;
     ResonanceSlider resonanceSlider;
     CustomToggleButton deltaBox;

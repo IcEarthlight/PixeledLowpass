@@ -23,7 +23,7 @@ void DeltaBoxLookAndFeel::drawTickBox(juce::Graphics& g,
 {
     juce::Rectangle<float> tickBounds(x, y, w, h);
 
-    g.setColour(ColorTable::text);
+    g.setColour(ticked ? ColorTable::textb : ColorTable::text);
 
     if (ticked)
     {
@@ -54,5 +54,5 @@ void DeltaBoxLookAndFeel::drawToggleButton(juce::Graphics& g,
 
 void CustomToggleButton::clicked()
 {
-    editor.repaint();
+    editor.deltaSwitch();
 }

@@ -22,12 +22,13 @@ public:
         juce::Colour& color,
         float gradient = 0.f
     );
+    ~SVGAsset();
 
     void resized(float localWei, float localHei);
-    void setColor(juce::Colour& newColor);
+    void setColor(const juce::Colour& newColor);
     void updateColor();
 
-private:
+protected:
     juce::Component& parentComponent;
     std::unique_ptr<juce::Drawable> img;
     juce::Rectangle<float> area;
@@ -51,6 +52,16 @@ public:
     void resized(float localWei, float localHei);
     void updateAll();
     void clear();
+
+    inline int size() const noexcept
+    {
+        return assets.size();
+    }
+
+    inline void setColorAt(const int index, const juce::Colour& newColor) const
+    {
+        assets[index]->setColor(newColor);
+    }
 
 private:
     std::vector<SVGAsset*> assets;
