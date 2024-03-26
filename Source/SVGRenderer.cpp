@@ -13,19 +13,19 @@
 
 SVGAsset::SVGAsset(
     juce::Component& parentComponent,
-    const juce::String& path,
+    const char* svg_src,
+    const int svg_srcSize,
     juce::Rectangle<float> area,
     juce::Colour& color,
     float gradient
-)
-    : parentComponent(parentComponent),
+)   : parentComponent(parentComponent),
       area(area),
       color(color),
       targetColor(color),
       gradient(gradient),
       needUpdate(false)
 {
-    img = juce::Drawable::createFromSVGFile(juce::File(path));
+    img = juce::Drawable::createFromImageData(svg_src, svg_srcSize);
     img->replaceColour(juce::Colours::black, targetColor);
     parentComponent.addChildComponent(*img);
     img->setVisible(true);
@@ -84,14 +84,15 @@ SVGRenderer::~SVGRenderer()
 
 void SVGRenderer::addAsset(
     juce::Component& parentComponent,
-    const juce::String& path,
+    const char* svg_src,
+    const int svg_srcSize,
     juce::Rectangle<float> area,
     juce::Colour color,
     float gradient
 )
 {
     assets.emplace_back(new SVGAsset(
-        parentComponent, path, area, color, gradient
+        parentComponent, svg_src, svg_srcSize, area, color, gradient
     ));
 }
 

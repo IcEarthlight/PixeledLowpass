@@ -3,6 +3,11 @@
 <JUCERPROJECT id="pyct4Z" name="Pixeled Lowpass" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="O6Uv7o" name="Pixeled Lowpass">
+    <GROUP id="{5972A948-034A-2A28-585A-EDF35927274C}" name="Assets">
+      <FILE id="Dio6XY" name="title_hp.svg" compile="0" resource="1" file="Assets/title_hp.svg"/>
+      <FILE id="coFDkP" name="title.svg" compile="0" resource="1" file="Assets/title.svg"/>
+      <FILE id="bjcCTr" name="delta.svg" compile="0" resource="1" file="Assets/delta.svg"/>
+    </GROUP>
     <GROUP id="{E7EA7C00-33D5-7749-3FA4-6756A129FAF2}" name="Source">
       <FILE id="gm6amc" name="CustomCheckbox.cpp" compile="1" resource="0"
             file="Source/CustomCheckbox.cpp"/>

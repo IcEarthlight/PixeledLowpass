@@ -17,7 +17,8 @@ class SVGAsset
 public:
     SVGAsset(
         juce::Component& parentComponent,
-        const juce::String& path,
+        const char* svg_src,
+        const int svg_srcSize,
         juce::Rectangle<float> area,
         juce::Colour& color,
         float gradient = 0.f
@@ -44,7 +45,8 @@ public:
     ~SVGRenderer();
     void addAsset(
         juce::Component& parentComponent,
-        const juce::String& path,
+        const char* svg_src,
+        const int svg_srcSize,
         juce::Rectangle<float> area,
         juce::Colour color,
         float gradient = 0.f

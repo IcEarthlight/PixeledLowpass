@@ -25,7 +25,8 @@ PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLo
     bool delta = deltaBox.getState();
     renderer.addAsset(
         *this,
-        "C:\\Users\\earth\\Works\\Code\\JUCE_works\\Pixeled Lowpass\\Assets\\title.svg",
+        BinaryData::title_svg,
+        BinaryData::title_svgSize,
         juce::Rectangle<float>(
             23.f  / 476, 16.f / 160,
             323.f / 476, 21.f / 160
@@ -35,7 +36,8 @@ PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLo
     );
     renderer.addAsset(
         *this,
-        "C:\\Users\\earth\\Works\\Code\\JUCE_works\\Pixeled Lowpass\\Assets\\title_hp.svg",
+        BinaryData::title_hp_svg,
+        BinaryData::title_hp_svgSize,
         juce::Rectangle<float>(
             23.f / 476, 16.f / 160,
             291.f / 476, 21.f / 160
@@ -45,7 +47,8 @@ PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLo
     );
     renderer.addAsset(
         *this,
-        "C:\\Users\\earth\\Works\\Code\\JUCE_works\\Pixeled Lowpass\\Assets\\delta.svg",
+        BinaryData::delta_svg,
+        BinaryData::delta_svgSize,
         juce::Rectangle<float>(
             29.f / 36, 641.f / 800,
             1431.f / 16660, 53.f / 800
