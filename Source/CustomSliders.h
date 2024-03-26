@@ -22,7 +22,9 @@ public:
           deltaParam(*apvts.getParameter("Delta"))
     { }
 
-    void drawLabelwithText(juce::Graphics& g, juce::Label& label, juce::String text, int digitLen);
+    juce::Slider::SliderLayout getSliderLayout(juce::Slider& slider) override;
+    void CustomLookAndFeel::drawLabelwithText(juce::Graphics& g,
+        juce::Label& label, juce::String text, int digitLen);
 
     int mouseDownCounter = 0;
     bool sliderNeedRepaint = true;
@@ -74,16 +76,16 @@ public:
         juce::Slider::SliderStyle sliderStyle,
         juce::Slider& slider) override;
 
-    inline void drawLabel(juce::Graphics& g, juce::Label& label) override
-    {
-        drawLabelwithText(g, label, "Resonance", 4);
-    }
-
 private:
     juce::RangedAudioParameter& cutFreqParam;
 
     int shakeCount = 0;
     juce::Point<float> shakeOffset { 0.f, 0.f };
+
+    inline void drawLabel(juce::Graphics& g, juce::Label& label) override
+    {
+        drawLabelwithText(g, label, "Resonance", 4);
+    }
 };
 
 struct CustomSlider : juce::Slider
@@ -108,8 +110,7 @@ public:
     {
         if (lnf->mouseDownCounter > 0)
         {
-            if (lnf->mouseDownCounter == 1)
-                repaint();
+            repaint();
             lnf->mouseDownCounter--;
         }
     }

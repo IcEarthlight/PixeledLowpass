@@ -102,11 +102,11 @@ void PixeledLowpassAudioProcessorEditor::resized()
 
     float interval = 0.08f;
     juce::Rectangle<int> lSliderArea(
-        interval * localWid, localHei / 3,
+        interval * localWid, 0.34f * localHei,
         (1 - 3 * interval)/2 * localWid, localHei / 3
     );
     juce::Rectangle<int> rSliderArea(
-        (0.5f + interval/2) * localWid, localHei / 3,
+        (0.5f + interval/2) * localWid, 0.34f * localHei,
         (1 - 3 * interval) / 2 * localWid, localHei / 3
     );
     juce::Rectangle<int> deltaBoxArea(
