@@ -43,6 +43,7 @@ private:
     juce::AudioProcessorValueTreeState::SliderAttachment cutFreqAtch, resonanceAtch;
     juce::AudioProcessorValueTreeState::ButtonAttachment deltaAtch;
 
+    bool lastState = false;
     SVGRenderer renderer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PixeledLowpassAudioProcessorEditor)

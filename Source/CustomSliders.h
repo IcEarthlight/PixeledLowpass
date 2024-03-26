@@ -24,7 +24,8 @@ public:
 
     juce::Slider::SliderLayout getSliderLayout(juce::Slider& slider) override;
     void CustomLookAndFeel::drawLabelwithText(juce::Graphics& g,
-        juce::Label& label, juce::String text, int digitLen);
+        juce::Label& label, juce::String text,
+        juce::String suffix, int digitLen);
 
     int mouseDownCounter = 0;
     bool sliderNeedRepaint = true;
@@ -58,7 +59,7 @@ public:
 
     inline void drawLabel(juce::Graphics& g, juce::Label& label) override
     {
-        drawLabelwithText(g, label, "Cut Freq", 6);
+        drawLabelwithText(g, label, "Cut Freq", " Hz", 6);
     }
 };
 
@@ -84,21 +85,20 @@ private:
 
     inline void drawLabel(juce::Graphics& g, juce::Label& label) override
     {
-        drawLabelwithText(g, label, "Resonance", 4);
+        drawLabelwithText(g, label, "Resonance", " dB", 4);
     }
 };
 
 struct CustomSlider : juce::Slider
 {
 public:
-    CustomSlider(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID, const juce::String& suffix)
+    CustomSlider(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID)
         : juce::Slider(
             juce::Slider::SliderStyle::LinearHorizontal,
             juce::Slider::TextEntryBoxPosition::TextBoxAbove
         ),
         apvts(apvts),
-        rap(*apvts.getParameter(parameterID)),
-        suffix(suffix)
+        rap(*apvts.getParameter(parameterID))
     { }
 
     ~CustomSlider()
@@ -125,14 +125,13 @@ protected:
 private:
     juce::AudioProcessorValueTreeState& apvts;
     juce::RangedAudioParameter& rap;
-    juce::String suffix;
 };
 
 struct CutFreqSlider : CustomSlider
 {
 public:
-    CutFreqSlider(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID, const juce::String& suffix)
-        : CustomSlider(apvts, parameterID, suffix)
+    CutFreqSlider(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID)
+        : CustomSlider(apvts, parameterID)
     {
         lnf = std::make_unique<CutFreqLookAndFeel>(apvts);
         setLookAndFeel(lnf.get());
@@ -147,8 +146,8 @@ public:
 struct ResonanceSlider : CustomSlider
 {
 public:
-    ResonanceSlider(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID, const juce::String& suffix)
-        : CustomSlider(apvts, parameterID, suffix)
+    ResonanceSlider(juce::AudioProcessorValueTreeState& apvts, juce::StringRef parameterID)
+        : CustomSlider(apvts, parameterID)
     {
         lnf = std::make_unique<ResonanceLookAndFeel>(apvts);
         setLookAndFeel(lnf.get());

@@ -52,7 +52,7 @@ void DeltaBoxLookAndFeel::drawToggleButton(juce::Graphics& g,
     );
 }
 
-void CustomToggleButton::clicked()
-{
-    editor.deltaSwitch();
-}
+//void CustomToggleButton::clicked()
+//{
+//    editor.deltaSwitch();
+//}

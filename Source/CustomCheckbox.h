@@ -57,7 +57,7 @@ public:
         return rap.getValue() > 0.5f;
     }
 
-    void clicked() override;
+    //void clicked() override;
 
 private:
     PixeledLowpassAudioProcessorEditor& editor;

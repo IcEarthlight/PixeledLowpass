@@ -97,7 +97,7 @@ juce::Slider::SliderLayout CustomLookAndFeel::getSliderLayout(juce::Slider& slid
     return layout;
 }
 
-void CustomLookAndFeel::drawLabelwithText(juce::Graphics& g, juce::Label& label, juce::String text, int digitLen)
+void CustomLookAndFeel::drawLabelwithText(juce::Graphics& g, juce::Label& label, juce::String text, juce::String suffix, int digitLen)
 {
     juce::Colour newColor;
     if (deltaParam.getValue() > 0.5f)
@@ -108,7 +108,7 @@ void CustomLookAndFeel::drawLabelwithText(juce::Graphics& g, juce::Label& label,
     colorGradient(labelNeedRepaint, labelColor, newColor, 0.08f);
 
     if (mouseDownCounter > 0)
-        text = label.getText().substring(0, digitLen);
+        text = label.getText().substring(0, digitLen) + suffix;
 
     if (!label.isBeingEdited())
     {

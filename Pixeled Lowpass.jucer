@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="pyct4Z" name="Pixeled Lowpass" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
-              pluginManufacturer="Earthlight" pluginVST3Category="Filter">
+              pluginManufacturer="Earthlight" pluginVST3Category="Filter" companyWebsite="https://github.com/IcEarthlight/PixeledLowpass/tree/master">
   <MAINGROUP id="O6Uv7o" name="Pixeled Lowpass">
     <GROUP id="{5972A948-034A-2A28-585A-EDF35927274C}" name="Assets">
       <FILE id="Dio6XY" name="title_hp.svg" compile="0" resource="1" file="Assets/title_hp.svg"/>

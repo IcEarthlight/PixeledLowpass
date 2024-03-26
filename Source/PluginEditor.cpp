@@ -12,8 +12,8 @@
 //==============================================================================
 PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLowpassAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p),
-      cutFreqSlider(p.apvts, "Cut Freq", "Hz"),
-      resonanceSlider(p.apvts, "Resonance", "dB"),
+      cutFreqSlider(p.apvts, "Cut Freq"),
+      resonanceSlider(p.apvts, "Resonance"),
       deltaBox(*this, p.apvts, "Delta"),
       cutFreqAtch(p.apvts, "Cut Freq", cutFreqSlider),
       resonanceAtch(p.apvts, "Resonance", resonanceSlider),
@@ -81,6 +81,12 @@ void PixeledLowpassAudioProcessorEditor::paint(juce::Graphics& g)
 
     g.fillAll(deltaBox.getState() ? ColorTable::backb : ColorTable::back);
 
+    if (deltaBox.getState() != lastState)
+    {
+        deltaSwitch();
+        lastState = deltaBox.getState();
+    }
+
     cutFreqSlider.update();
     resonanceSlider.update();
 
@@ -128,7 +134,7 @@ void PixeledLowpassAudioProcessorEditor::deltaSwitch()
 {
     repaint();
 
-    bool delta = !deltaBox.getState();
+    bool delta = deltaBox.getState();
     for (int i = 0; i < renderer.size(); i++)
         renderer.setColorAt(i, ColorTable::arr[(i << 1) + delta]);
 }
