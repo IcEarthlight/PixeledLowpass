@@ -15,9 +15,11 @@ PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLo
       cutFreqSlider(p.apvts, "Cut Freq"),
       resonanceSlider(p.apvts, "Resonance"),
       deltaBox(*this, p.apvts, "Delta"),
+      doubleFilter(*this, p.apvts, "DoubleFilter"),
       cutFreqAtch(p.apvts, "Cut Freq", cutFreqSlider),
       resonanceAtch(p.apvts, "Resonance", resonanceSlider),
-      deltaAtch(p.apvts, "Delta", deltaBox)
+      deltaAtch(p.apvts, "Delta", deltaBox),
+      doubleAtch(p.apvts, "DoubleFilter", doubleFilter)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -39,7 +41,7 @@ PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLo
         BinaryData::title_hp_svg,
         BinaryData::title_hp_svgSize,
         juce::Rectangle<float>(
-            23.f / 476, 16.f / 160,
+            23.f  / 476, 16.f / 160,
             291.f / 476, 21.f / 160
         ),
         ColorTable::arr[(1 << 1) + delta],
@@ -56,13 +58,27 @@ PixeledLowpassAudioProcessorEditor::PixeledLowpassAudioProcessorEditor(PixeledLo
         ColorTable::arr[(2 << 1) + delta],
         0.08f
     );
+    renderer.addAsset(
+        *this,
+        BinaryData::double_filter_svg,
+        BinaryData::double_filter_svgSize,
+        juce::Rectangle<float>(
+            421.f / 476, 23.f / 160,
+            18.f  / 476, 12.f / 160
+        ),
+        ColorTable::arr[(3 << 1) + delta],
+        0.04f
+    );
+
 
     addChildComponent(cutFreqSlider);
     addChildComponent(resonanceSlider);
     addChildComponent(deltaBox);
+    addChildComponent(doubleFilter);
     cutFreqSlider.setVisible(true);
     resonanceSlider.setVisible(true);
     deltaBox.setVisible(true);
+    doubleFilter.setVisible(true);
 
     setSize(defaultWid, defaultHei);
     setResizable(true, false);
@@ -81,10 +97,16 @@ void PixeledLowpassAudioProcessorEditor::paint(juce::Graphics& g)
 
     g.fillAll(deltaBox.getState() ? ColorTable::backb : ColorTable::back);
 
-    if (deltaBox.getState() != lastState)
+    if (deltaBox.getState() != lastDeltaState)
     {
         deltaSwitch();
-        lastState = deltaBox.getState();
+        lastDeltaState = deltaBox.getState();
+    }
+
+    if (doubleFilter.getState() != lastDoubleState)
+    {
+        doubleSwitch();
+        lastDoubleState = doubleFilter.getState();
     }
 
     cutFreqSlider.update();
@@ -122,19 +144,40 @@ void PixeledLowpassAudioProcessorEditor::resized()
         localWid * 339 / 476, localHei * 119 / 160,
         localWid * 107 / 476, localHei *  29 / 160
     );
+    juce::Rectangle<int> doubleFilterArea(
+        localWid * 412 / 476, localHei * 17 / 160,
+        localWid *  36 / 476, localHei * 24 / 160
+    );
 
     cutFreqSlider.setBounds(lSliderArea);
     resonanceSlider.setBounds(rSliderArea);
     deltaBox.setBounds(deltaBoxArea);
+    doubleFilter.setBounds(doubleFilterArea);
 
     renderer.resized(localWid, localHei);
 }
 
 void PixeledLowpassAudioProcessorEditor::deltaSwitch()
 {
-    repaint();
-
     bool delta = deltaBox.getState();
+    bool isdouble = doubleFilter.getState();
     for (int i = 0; i < renderer.size(); i++)
         renderer.setColorAt(i, ColorTable::arr[(i << 1) + delta]);
+
+    if (isdouble)
+        renderer.setColorAt(3, delta ? ColorTable::filterx2b_on : ColorTable::filterx2_on);
+
+    repaint();
+}
+
+void PixeledLowpassAudioProcessorEditor::doubleSwitch()
+{
+    bool delta = deltaBox.getState();
+    bool isdouble = doubleFilter.getState();
+    if (isdouble)
+        renderer.setColorAt(3, delta ? ColorTable::filterx2b_on : ColorTable::filterx2_on);
+    else
+        renderer.setColorAt(3, delta ? ColorTable::filterx2b_off : ColorTable::filterx2_off);
+
+    repaint();
 }

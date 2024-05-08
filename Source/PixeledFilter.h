@@ -137,17 +137,20 @@ class PixeledFilter
 public:
     bool delta;
 
-    inline void setFreq(float freq, double srate);
+    inline void setFreq(float freq, double srate)
+    {
+        convAmt = freq <= 12000.f ?
+            srate / freq :
+            1.f + (srate / 1.2e4f - 1.f) * pow((3.e4f - freq) / 1.8e4f, 2);
+    }
+    inline void setBypassed() { convAmt = 1.f; }
+
     void prepare(float freq, double srate);
     void process(juce::AudioBuffer<float>& buffer);
 
 private:
-    float cutFreq;
     float convAmt;
     float prevAmt;
-
-    juce::String logMsg { };
-    juce::FileLogger logger { juce::File("C:\\Users\\earth\\Documents\\Code\\JUCE_works\\Pixeled Lowpass\\log.txt"), "Welcome" };
 
     std::vector<SampleData> buf;
     int nextPos;

@@ -68,7 +68,7 @@ public:
 
 private:
     juce::dsp::IIR::Filter<float> lRsnFilter, rRsnFilter;
-    PixeledFilter pxlFilter;
+    PixeledFilter pxlFilter, pxlFilter2;
 
     void initRsnFilter(double sampleRate, int samplesPerBlock);
     void initPxlFilter(double sampleRate, float cutFreq);

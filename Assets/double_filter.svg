@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="21"
+   height="14"
+   viewBox="0 0 5.5562502 3.7041666"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="DoubleFilter.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="16"
+     inkscape:cx="8.96875"
+     inkscape:cy="12.3125"
+     inkscape:window-width="1269"
+     inkscape:window-height="952"
+     inkscape:window-x="338"
+     inkscape:window-y="338"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="图层 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       d="M 2.9502105,3.3458042 2.9460611,2.8466097 C 3.6087667,2.3620958 4.5556139,1.5317027 4.6622308,0.95421839 4.7132445,0.68040193 4.5406063,0.50845219 4.3583499,0.48120669 4.3121287,0.47386497 3.6495787,0.31671189 3.0977069,0.97481241 L 2.9575029,0.33420705 C 3.3465903,0.05438955 4.0687477,-0.07246084 4.5757202,0.0419569 5.0417792,0.14329183 5.3039057,0.63862559 5.1172988,1.168858 4.9129099,1.7271843 4.2642711,2.4397979 3.7286986,2.8659023 c 0.3833186,-0.00104 0.8990466,4.708e-4 1.2822889,-0.00723 0.083351,-0.00482 0.183417,-0.012859 0.3001969,-0.024116 l -0.01451,0.5112523 H 2.9502193 Z"
+       id="2"
+       sodipodi:nodetypes="cccccccccccccc" />
+    <path
+       d="M 0,3.018399 0.70887506,1.9875075 0.07875962,1.0803288 H 0.70953756 L 1.0778021,1.7149962 1.4641845,1.0803288 H 2.0530377 L 1.4251124,1.9817905 2.132449,3.018399 H 1.5035767 L 1.0629881,2.2752643 0.61172126,3.018399 Z"
+       id="x"
+       sodipodi:nodetypes="ccccccccccccc" />
+  </g>
+</svg>

@@ -28,10 +28,12 @@ public:
     void resized() override;
 
     void deltaSwitch();
+    void doubleSwitch();
 
     CutFreqSlider cutFreqSlider;
     ResonanceSlider resonanceSlider;
-    CustomToggleButton deltaBox;
+    DeltaBoxButton deltaBox;
+    DoubleFilterButton doubleFilter;
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -41,9 +43,10 @@ private:
     const int defaultWid = 476, defaultHei = 160;
 
     juce::AudioProcessorValueTreeState::SliderAttachment cutFreqAtch, resonanceAtch;
-    juce::AudioProcessorValueTreeState::ButtonAttachment deltaAtch;
+    juce::AudioProcessorValueTreeState::ButtonAttachment deltaAtch, doubleAtch;
 
-    bool lastState = false;
+    bool lastDeltaState = false;
+    bool lastDoubleState = false;
     SVGRenderer renderer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PixeledLowpassAudioProcessorEditor)

@@ -8,6 +8,8 @@
       <FILE id="Dio6XY" name="title_hp.svg" compile="0" resource="1" file="Assets/title_hp.svg"/>
       <FILE id="coFDkP" name="title.svg" compile="0" resource="1" file="Assets/title.svg"/>
       <FILE id="bjcCTr" name="delta.svg" compile="0" resource="1" file="Assets/delta.svg"/>
+      <FILE id="bcXgWm" name="double_filter.svg" compile="0" resource="1"
+            file="Assets/double_filter.svg"/>
     </GROUP>
     <GROUP id="{E7EA7C00-33D5-7749-3FA4-6756A129FAF2}" name="Source">
       <FILE id="gm6amc" name="CustomCheckbox.cpp" compile="1" resource="0"

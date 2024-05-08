@@ -21,7 +21,8 @@ PixeledLowpassAudioProcessor::PixeledLowpassAudioProcessor()
                      #endif
                        ),
        apvts(*this, nullptr, "Parameters", createParameterLayout()),
-       pxlFilter()
+       pxlFilter(),
+       pxlFilter2()
 #endif
 {
 }
@@ -191,7 +192,7 @@ bool PixeledLowpassAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* PixeledLowpassAudioProcessor::createEditor()
 {
-    return new PixeledLowpassAudioProcessorEditor (*this);
+    return new PixeledLowpassAudioProcessorEditor(*this);
     //return new juce::GenericAudioProcessorEditor(*this);
 }
 
@@ -278,6 +279,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout PixeledLowpassAudioProcessor
         "Noise",
         false
     ));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        "DoubleFilter",
+        "DoubleFilter",
+        false
+    ));
 
     return layout;
 }
@@ -296,6 +302,7 @@ void PixeledLowpassAudioProcessor::initRsnFilter(double sampleRate, int samplesP
 void PixeledLowpassAudioProcessor::initPxlFilter(double sampleRate, float cutFreq)
 {
     pxlFilter.prepare(cutFreq, sampleRate);
+    pxlFilter2.prepare(cutFreq, sampleRate);
 }
 
 void PixeledLowpassAudioProcessor::updateRsnFilter(const FilterParams& filterParams)
@@ -315,6 +322,17 @@ void PixeledLowpassAudioProcessor::updatePxlFilter(float cutFreq)
 {
     pxlFilter.delta = apvts.getParameterAsValue("Delta").getValue();
     pxlFilter.setFreq(cutFreq, getSampleRate());
+
+    if (apvts.getParameterAsValue("DoubleFilter").getValue())
+    {
+        pxlFilter2.setFreq(cutFreq, getSampleRate());
+        pxlFilter2.delta = pxlFilter.delta;
+    }
+    else
+    {
+        pxlFilter2.setBypassed();
+        pxlFilter2.delta = false;
+    }
 }
 
 void PixeledLowpassAudioProcessor::applyRsnFilter(juce::AudioBuffer<float>& buffer)
@@ -334,6 +352,7 @@ void PixeledLowpassAudioProcessor::applyRsnFilter(juce::AudioBuffer<float>& buff
 void PixeledLowpassAudioProcessor::applyPxlFilter(juce::AudioBuffer<float>& buffer)
 {
     pxlFilter.process(buffer);
+    pxlFilter2.process(buffer);
 }
 
 //==============================================================================

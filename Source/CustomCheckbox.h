@@ -31,10 +31,19 @@ public:
         [[maybe_unused]] const bool shouldDrawButtonAsDown) override;
 };
 
-struct CustomToggleButton : juce::ToggleButton
+struct DoubleFilterLookAndFeel : juce::LookAndFeel_V4
 {
 public:
-    CustomToggleButton(
+    void drawToggleButton(juce::Graphics& g,
+        juce::ToggleButton& button,
+        bool shouldDrawButtonAsHighlighted,
+        bool shouldDrawButtonAsDown) override { }
+};
+
+struct DeltaBoxButton : juce::ToggleButton
+{
+public:
+    DeltaBoxButton(
         PixeledLowpassAudioProcessorEditor& editor,
         juce::AudioProcessorValueTreeState& apvts,
         juce::StringRef parameterID
@@ -47,7 +56,7 @@ public:
         setLookAndFeel(&lnf);
     }
 
-    ~CustomToggleButton()
+    ~DeltaBoxButton()
     {
         setLookAndFeel(nullptr);
     }
@@ -65,4 +74,40 @@ private:
     juce::RangedAudioParameter& rap;
 
     DeltaBoxLookAndFeel lnf;
+};
+
+struct DoubleFilterButton : juce::ToggleButton
+{
+public:
+    DoubleFilterButton(
+        PixeledLowpassAudioProcessorEditor& editor,
+        juce::AudioProcessorValueTreeState& apvts,
+        juce::StringRef parameterID
+    )
+        : editor(editor),
+        juce::ToggleButton(),
+        apvts(apvts),
+        rap(*apvts.getParameter(parameterID))
+    {
+        setLookAndFeel(&lnf);
+    }
+
+    ~DoubleFilterButton()
+    {
+        setLookAndFeel(nullptr);
+    }
+
+    inline bool getState() const noexcept
+    {
+        return rap.getValue() > 0.5f;
+    }
+
+    //void clicked() override;
+
+private:
+    PixeledLowpassAudioProcessorEditor& editor;
+    juce::AudioProcessorValueTreeState& apvts;
+    juce::RangedAudioParameter& rap;
+
+    DoubleFilterLookAndFeel lnf;
 };

@@ -10,14 +10,6 @@
 
 #include "PixeledFilter.h"
 
-inline void PixeledFilter::setFreq(float freq, double srate)
-{
-    cutFreq = freq;
-    convAmt = cutFreq <= 12000.f ?
-        srate / cutFreq :
-        1.f + (srate / 1.2e4f - 1.f) * pow((3.e4f - cutFreq) / 1.8e4f, 2);
-}
-
 void PixeledFilter::prepare(float freq, double srate)
 {
     setFreq(freq, srate);
